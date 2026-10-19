@@ -12,6 +12,7 @@
     "@base-ui/react": "^1.9.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
+    "@oasis/shared": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
     "framer-motion": "^12.42.2",

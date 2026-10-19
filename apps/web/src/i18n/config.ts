@@ -5,7 +5,7 @@ export const DEFAULT_LANG: Lang = 'ar';
 export const LANG_STORAGE_KEY = 'lang';
 
 // Prefix for files in /public when the site is served from a sub-path (e.g. GitHub Pages project sites)
-export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+export const BASE_PATH = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_BASE_PATH ? process.env.NEXT_PUBLIC_BASE_PATH : '';
 export const asset = (path: string) => `${BASE_PATH}${path}`;
 
 export const isLang = (value: unknown): value is Lang =>

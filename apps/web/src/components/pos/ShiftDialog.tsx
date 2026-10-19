@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { CircleCheck } from 'lucide-react';
-import { OPENING_FLOAT, PAYMENT_KINDS, fmtMoney, toHalalas, type CompletedSale } from '@/data/posData';
-import { usePhase1Store } from '@/data/phase1Store';
+import { OPENING_FLOAT, PAYMENT_KINDS, fmtMoney, toHalalas, usePhase1Store, type CompletedSale } from '@/data/seedData';
 import Modal from './Modal';
 import { METHOD_ICON } from './PayDialog';
 import { usePos } from './usePos';

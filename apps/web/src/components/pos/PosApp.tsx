@@ -10,16 +10,11 @@ import {
 import { asset, type Lang } from '@/i18n/config';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
-  BOOKABLE_IDS, THERAPISTS, bookableInfo, minutesOfDay, type Booking, type BookableId, type MixCategory, type ServiceKind,
-} from '@/data/dashboardData';
-import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
-import { getSalonData } from '@/data/salonData';
-import { usePhase1Store } from '@/data/phase1Store';
-import { usePhase34Store } from '@/data/phase34Store';
-import {
-  DISCOUNTS, TERMINAL_ID, discountAmount, receiptNo, toHalalas, vatOf,
-  type Cashier, type CompletedSale, type Discount, type Payment, type TicketLine,
-} from '@/data/posData';
+  BOOKABLE_IDS, DISCOUNTS, TERMINAL_ID, THERAPISTS, bookableInfo, discountAmount, getSalonData,
+  mergeBookings, minutesOfDay, receiptNo, toHalalas, useBookingsStore, usePhase1Store, usePhase34Store, vatOf,
+  type Booking, type BookableId, type Cashier, type CompletedSale, type Discount, type MixCategory,
+  type Payment, type ServiceKind, type TicketLine,
+} from '@/data/seedData';
 import { useNow, useOnline } from '@/components/dashboard/useDashboard';
 import { fmtMinutes } from '@/components/dashboard/format';
 import PinLock from './PinLock';

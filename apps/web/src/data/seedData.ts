@@ -39,10 +39,10 @@ export const SEED_COMPANY_AND_BRANCH = {
 
   // [REQUIRED for ZATCA] 15-digit VAT Registration Number (starts and ends with 3)
   // Leave '' if not VAT-registered yet.
-  vatNumber: '',
+  vatNumber: '323000000000003',
 
   // [OPTIONAL] 10-digit Commercial Registration (السجل التجاري)
-  crNumber: '',
+  crNumber: '1010000000',
 
   // [REQUIRED] ISO Currency code & VAT percentage
   currency: 'SAR',
@@ -53,29 +53,29 @@ export const SEED_COMPANY_AND_BRANCH = {
   terminalId: 'T1',
 
   // [REQUIRED] Default opening cash float in SAR for new shifts (e.g. 500 SAR)
-  defaultOpeningFloatSar: 500,
+  defaultOpeningFloatSar: 0,
 
   // [REQUIRED] Primary Branch name in Arabic & English
-  branchNameAr: '', // e.g. 'فرع النزهة · جدة'
-  branchNameEn: '', // e.g. 'Al Nuzha · Jeddah'
+  branchNameAr: 'فرع النزهة, شارع حراء · جدة',
+  branchNameEn: 'Al Nuzha · Jeddah',
 
   // [REQUIRED] Branch contact phone / WhatsApp & public email
-  phone: '', // e.g. '+966 55 000 0000'
-  email: '', // e.g. 'info@relaxation-oasis.sa'
+  phone: '+966579590090', // e.g. '+966579590090'
+  email: 'ooasisrelax@gmail.com', // e.g. 'info@relaxation-oasis.sa'
 
   // [OPTIONAL] Physical branch address in Arabic & English
-  addressAr: 'حي النزهة، جدة، المملكة العربية السعودية',
-  addressEn: 'Al Nuzha District, Jeddah, Saudi Arabia',
+  addressAr: 'شارع حراء، حي النزهة، جدة، المملكة العربية السعودية',
+  addressEn: 'Heraa st, Al Nuzha District, Jeddah, Saudi Arabia',
 
   // [OPTIONAL] Google Maps embed URL for the public landing page Contact section
   mapCoordinates:
-    'https://maps.google.com/maps?q=%D8%AD%D9%8A%20%D8%A7%D9%84%D9%86%D8%B2%D9%87%D8%A9%D8%8C%20%D8%AC%D8%AF%D8%A9&z=14&output=embed',
+    'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1252.703885982852!2d39.16198415110974!3d21.615436879324385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c3d114824c145f%3A0x2cfb0b4d96280475!2z2YXYsdmD2LIg2YjYp9it2Kkg2KfZhNin2LPYqtix2K7Yp9ih!5e1!3m2!1sen!2ssa!4v1792404036019!5m2!1sen!2ssa',
 
   // [OPTIONAL] Public landing page display hours
   publicDisplayHours: {
-    weekdays: { en: '10:00 AM - 11:30 PM', ar: '10:00 ص - 11:30 م' },
-    saturday: { en: '10:00 AM - 11:30 PM', ar: '10:00 ص - 11:30 م' },
-    sunday: { en: '10:00 AM - 11:30 PM', ar: '10:00 ص - 11:30 م' },
+    weekdays: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
+    saturday: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
+    sunday: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
   },
 
   isActive: true,
@@ -107,13 +107,13 @@ export const SEED_WORKING_HOURS: {
     end: '13:15',
   },
   days: [
-    { key: 'saturday', open: '10:00', close: '23:30', enabled: true },
-    { key: 'sunday', open: '10:00', close: '23:30', enabled: true },
-    { key: 'monday', open: '10:00', close: '23:30', enabled: true },
-    { key: 'tuesday', open: '10:00', close: '23:30', enabled: true },
-    { key: 'wednesday', open: '10:00', close: '23:30', enabled: true },
-    { key: 'thursday', open: '10:00', close: '23:59', enabled: true },
-    { key: 'friday', open: '13:30', close: '23:59', enabled: true },
+    { key: 'saturday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'sunday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'monday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'tuesday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'wednesday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'thursday', open: '15:00', close: '5:00', enabled: true },
+    { key: 'friday', open: '16:00', close: '5:00', enabled: true },
   ],
 };
 
@@ -123,20 +123,19 @@ export const SEED_WORKING_HOURS: {
  * `pinCode` is hashed into `users.pin_hash` when pushed to Supabase.
  */
 export const SEED_STAFF: StaffMemberConfig[] = [
-  /*
-   * [REQUIRED] Uncomment and fill at least 1 Admin (and any Cashiers):
-   *
-   * {
-   *   id: 'usr-admin-1',
-   *   fullNameAr: 'اسم المدير',            // [REQUIRED] Arabic full name
-   *   fullNameEn: 'Admin Name',            // [REQUIRED] English full name
-   *   email: 'admin@yourdomain.sa',        // [REQUIRED] Supabase Auth login email
-   *   role: 'admin',                       // [REQUIRED] 'admin' | 'cashier'
-   *   pinCode: '1234',                     // [REQUIRED] 4-digit POS fast-unlock PIN
-   *   pinHashPreview: 'bcrypt_sha256',     // Auto-computed on save
-   *   isActive: true,
-   * },
-   */
+
+   
+    {
+      id: 'usr-admin-1',
+      fullNameAr: 'هدى',            // [REQUIRED] Arabic full name
+      fullNameEn: 'Huda',            // [REQUIRED] English full name
+      email: 'osama.aalam@gmail.com',        // [REQUIRED] Supabase Auth login email
+      role: 'admin',                       // [REQUIRED] 'admin' | 'cashier'
+      pinCode: '1234',                     // [REQUIRED] 4-digit POS fast-unlock PIN
+      pinHashPreview: 'bcrypt_sha256',     // Auto-computed on save
+      isActive: true,
+   },
+
 ];
 
 /**
