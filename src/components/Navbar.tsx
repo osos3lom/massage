@@ -12,7 +12,6 @@ const navItems = [
   { key: 'about', href: '#about' },
   { key: 'services', href: '#services' },
   { key: 'packages', href: '#packages' },
-  { key: 'specialists', href: '#specialists' },
   { key: 'gallery', href: '#gallery' },
   { key: 'faq', href: '#faq' },
   { key: 'contact', href: '#contact' },
@@ -122,7 +121,7 @@ export default function Navbar() {
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, '#contact')}
-              className="inline-flex items-center justify-center whitespace-nowrap px-6 py-2.5 text-xs font-semibold tracking-widest uppercase border border-aura-accent text-aura-text hover:bg-aura-accent hover:text-white hover:-translate-y-0.5 shadow-sm transition-all duration-300 rounded-full"
+              className="inline-flex items-center justify-center whitespace-nowrap px-6 py-2.5 text-xs font-semibold tracking-widest uppercase border border-aura-accent text-aura-text hover:bg-aura-gradient hover:border-transparent hover:text-white hover:-translate-y-0.5 shadow-sm transition-all duration-300 rounded-full"
             >
               {t.nav.bookNow}
             </a>
@@ -174,7 +173,7 @@ export default function Navbar() {
               <a
                 href="#contact"
                 onClick={(e) => handleNavClick(e, '#contact')}
-                className="w-full text-center py-4 bg-aura-accent text-white font-semibold tracking-widest uppercase rounded-full shadow-sm hover:bg-aura-accent-hover transition-colors"
+                className="w-full text-center py-4 bg-aura-accent bg-aura-gradient text-white font-semibold tracking-widest uppercase rounded-full shadow-sm hover:bg-aura-gradient-hover"
               >
                 {t.nav.bookAppointment}
               </a>

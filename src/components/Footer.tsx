@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Send, ArrowUp } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/i18n/LanguageProvider';
+import { SITE_IMAGES } from '@/data/siteImages';
 import { asset } from '@/i18n/config';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -56,16 +57,9 @@ const TwitterIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const instagramPhotos = [
-  'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=300&q=80',
-  'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=300&q=80',
-];
+const instagramPhotos = SITE_IMAGES.instagram;
 
-const footerLinks = ['about', 'services', 'packages', 'specialists', 'gallery', 'faq'] as const;
+const footerLinks = ['about', 'services', 'packages', 'gallery', 'faq'] as const;
 
 export default function Footer() {
   const { t } = useLanguage();

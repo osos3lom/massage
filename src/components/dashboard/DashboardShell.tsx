@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Cloud, CloudOff, ExternalLink, Menu, Search, X } from 'lucide-react';
+import { Bell, Cloud, CloudOff, ExternalLink, Menu, Search, ShieldCheck, X } from 'lucide-react';
 import { asset } from '@/i18n/config';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { NAV } from './nav';
@@ -13,7 +13,7 @@ import { useDashboard, useOnline } from './useDashboard';
 // next/navigation reports "/dashboard/bookings/" because the export uses trailing slashes
 const normalize = (path: string) => (path.length > 1 ? path.replace(/\/$/, '') : path);
 
-function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+function Sidebar({ role, onNavigate }: { role: 'admin' | 'cashier'; onNavigate?: () => void }) {
   const { t, d } = useDashboard();
   const pathname = normalize(usePathname());
   const online = useOnline();
@@ -29,44 +29,48 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-        {NAV.map(({ group, items }) => (
-          <div key={group}>
-            <p className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-muted/80">
-              {d.nav.groups[group]}
-            </p>
-            <ul className="space-y-0.5">
-              {items.map((item) => {
-                const active = pathname === item.href;
-                const Icon = item.icon;
-                return (
-                  <li key={item.key}>
-                    <Link
-                      href={item.href}
-                      onClick={onNavigate}
-                      aria-current={active ? 'page' : undefined}
-                      className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
-                        active
-                          ? 'bg-aura-primary text-aura-accent-hover font-semibold'
-                          : 'text-aura-text/80 hover:bg-aura-primary/50 hover:text-aura-text'
-                      }`}
-                    >
-                      <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-aura-accent' : 'text-aura-muted group-hover:text-aura-accent'}`} />
-                      <span className="flex-1 truncate">{d.nav.items[item.key]}</span>
-                      {!item.ready && (
-                        <span
-                          title={`${d.nav.phase} ${item.phase}`}
-                          className="text-[10px] font-medium rounded-full px-1.5 py-0.5 bg-aura-bg text-aura-muted border border-aura-border"
-                        >
-                          P{item.phase}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+        {NAV.map(({ group, items }) => {
+          const visibleItems = items.filter((item) => item.roles.includes(role));
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={group}>
+              <p className="px-3 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-muted/80">
+                {d.nav.groups[group]}
+              </p>
+              <ul className="space-y-0.5">
+                {visibleItems.map((item) => {
+                  const active = pathname === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.key}>
+                      <Link
+                        href={item.href}
+                        onClick={onNavigate}
+                        aria-current={active ? 'page' : undefined}
+                        className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
+                          active
+                            ? 'bg-aura-primary text-aura-accent-hover font-semibold'
+                            : 'text-aura-text/80 hover:bg-aura-primary/50 hover:text-aura-text'
+                        }`}
+                      >
+                        <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-aura-accent' : 'text-aura-muted group-hover:text-aura-accent'}`} />
+                        <span className="flex-1 truncate">{d.nav.items[item.key]}</span>
+                        {!item.ready && (
+                          <span
+                            title={`${d.nav.phase} ${item.phase}`}
+                            className="text-[10px] font-medium rounded-full px-1.5 py-0.5 bg-aura-bg text-aura-muted border border-aura-border"
+                          >
+                            P{item.phase}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Local-first: staff should always see whether this terminal is synced */}
@@ -94,8 +98,9 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
-  const { d } = useDashboard();
+  const { lang, d } = useDashboard();
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<'admin' | 'cashier'>('admin');
 
   useEffect(() => {
     if (!open) return;
@@ -108,7 +113,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     <div className="min-h-screen bg-aura-bg">
       {/* Desktop sidebar */}
       <aside className="hidden lg:block fixed inset-y-0 start-0 w-64 bg-aura-surface border-e border-aura-border z-30">
-        <Sidebar />
+        <Sidebar role={role} />
       </aside>
 
       {/* Mobile drawer */}
@@ -129,7 +134,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             >
               <X className="w-4 h-4" />
             </button>
-            <Sidebar onNavigate={() => setOpen(false)} />
+            <Sidebar role={role} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       )}
@@ -156,6 +161,19 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
           <div className="ms-auto flex items-center gap-1 sm:gap-2">
             <span className="hidden md:inline text-xs text-aura-muted">{d.shell.branch}</span>
+            <button
+              type="button"
+              onClick={() => setRole((r) => (r === 'admin' ? 'cashier' : 'admin'))}
+              title={lang === 'ar' ? 'تبديل صلاحية العرض (مدير / كاشير)' : 'Toggle RBAC role preview (Admin / Cashier)'}
+              className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full border text-xs font-medium transition-colors ${
+                role === 'admin'
+                  ? 'border-aura-accent/40 bg-aura-primary text-aura-accent'
+                  : 'border-aura-border bg-aura-surface text-aura-muted'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>{role === 'admin' ? (lang === 'ar' ? 'مدير' : 'Admin') : (lang === 'ar' ? 'كاشير' : 'Cashier')}</span>
+            </button>
             <LanguageSwitcher />
             <button
               type="button"
@@ -169,7 +187,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               title={d.shell.roleOwner}
               className="w-9 h-9 rounded-full bg-aura-accent text-white grid place-items-center text-xs font-semibold"
             >
-              OA
+              {role === 'admin' ? 'OA' : 'HS'}
             </div>
           </div>
         </header>

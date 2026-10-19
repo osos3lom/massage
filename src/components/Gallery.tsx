@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 import { useLanguage } from '@/i18n/LanguageProvider';
 
-const categories = ['all', 'interior', 'spa', 'hair', 'skin', 'nails'] as const;
+const categories = ['all', 'rooms', 'bath', 'pedicure', 'lounge'] as const;
 
 export default function Gallery() {
   const { t, data, dir } = useLanguage();

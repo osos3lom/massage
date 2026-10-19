@@ -1,15 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Phone,
   Mail,
   MapPin,
   Clock,
-  Calendar,
   CheckCircle,
-  User,
   Sparkles,
   ArrowRight,
   ArrowLeft,
@@ -18,16 +16,18 @@ import {
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { formatPrice, formatTime } from '@/i18n/config';
 
+// Value of the type dropdown that lists the packages instead of single services
+const PACKAGES = 'packages';
+
 const timeSlots = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00'];
 
 export default function Contact() {
   const { t, data, lang } = useLanguage();
-  const { BUSINESS_INFO, SERVICES_CATEGORIES, SERVICES_DATA, SPECIALISTS_DATA } = data;
+  const { BUSINESS_INFO, SERVICES_CATEGORIES, SERVICES_DATA, PACKAGES_DATA } = data;
   // Booking Form State
   const [step, setStep] = useState(1);
   const [category, setCategory] = useState('');
   const [service, setService] = useState('');
-  const [specialist, setSpecialist] = useState('any');
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [clientInfo, setClientInfo] = useState({
@@ -57,10 +57,11 @@ export default function Contact() {
       if (customEvent.detail) {
         const { serviceId } = customEvent.detail;
         const found = SERVICES_DATA.find((s) => s.id === serviceId);
-        if (found) {
-          setCategory(found.category);
-          setService(found.id);
-          setStep(2); // Jump to specialist selection since service is decided
+        const pkg = PACKAGES_DATA.find((p) => p.id === serviceId);
+        if (found || pkg) {
+          setCategory(found ? found.category : PACKAGES);
+          setService(serviceId);
+          setStep(2); // Jump to date & time since the service is decided
         }
       }
     };
@@ -72,7 +73,7 @@ export default function Contact() {
       window.removeEventListener('quick-booking-select', handleQuickBook);
       window.removeEventListener('service-booking-select', handleServiceBook);
     };
-  }, [SERVICES_DATA]);
+  }, [SERVICES_DATA, PACKAGES_DATA]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -83,8 +84,7 @@ export default function Contact() {
 
   const handleNextStep = () => {
     if (step === 1 && (!category || !service)) return;
-    if (step === 2 && !specialist) return;
-    if (step === 3 && (!date || !timeSlot)) return;
+    if (step === 2 && (!date || !timeSlot)) return;
     setStep((prev) => prev + 1);
   };
 
@@ -102,7 +102,7 @@ export default function Contact() {
       const code = 'WRM-' + Math.floor(100000 + Math.random() * 900000);
       setBookingCode(code);
       setIsSubmitting(false);
-      setStep(5); // Go to success page
+      setStep(4); // Go to success page
     }, 1500);
   };
 
@@ -110,7 +110,6 @@ export default function Contact() {
     setStep(1);
     setCategory('');
     setService('');
-    setSpecialist('any');
     setDate('');
     setTimeSlot('');
     setClientInfo({
@@ -122,10 +121,10 @@ export default function Contact() {
     setBookingCode('');
   };
 
-  // Filter services matching chosen category
-  const filteredServicesList = SERVICES_DATA.filter((s) => s.category === category);
-  const activeServiceObj = SERVICES_DATA.find((s) => s.id === service);
-  const activeSpecialistObj = SPECIALISTS_DATA.find((s) => s.id === specialist);
+  // Services matching the chosen type, or the packages
+  const filteredServicesList =
+    category === PACKAGES ? PACKAGES_DATA : SERVICES_DATA.filter((s) => s.category === category);
+  const activeServiceObj = [...SERVICES_DATA, ...PACKAGES_DATA].find((s) => s.id === service);
 
   return (
     <section id="contact" className="py-28 bg-aura-bg relative">
@@ -208,16 +207,16 @@ export default function Contact() {
             <p className="text-xs text-aura-muted font-light mb-8">{t.contact.formIntro}</p>
 
             {/* Stepper Progress Indicator */}
-            {step < 5 && (
+            {step < 4 && (
               <div className="flex items-center justify-between mb-8 relative">
                 {/* Horizontal progress bar track */}
                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[2px] bg-aura-bg z-0" />
                 <div
                   className="absolute start-0 top-1/2 -translate-y-1/2 h-[2px] bg-aura-accent transition-all duration-500 z-0"
-                  style={{ width: `${((step - 1) / 3) * 100}%` }}
+                  style={{ width: `${((step - 1) / 2) * 100}%` }}
                 />
 
-                {[1, 2, 3, 4].map((num) => (
+                {[1, 2, 3].map((num) => (
                   <div
                     key={num}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold z-10 transition-colors duration-500 ${
@@ -267,6 +266,7 @@ export default function Contact() {
                             {cat.name}
                           </option>
                         ))}
+                        <option value={PACKAGES}>{t.contact.packagesCategory}</option>
                       </select>
                     </div>
 
@@ -294,7 +294,7 @@ export default function Contact() {
                   </motion.div>
                 )}
 
-                {/* STEP 2: Choose Specialist */}
+                {/* STEP 3: Select Date & Time Slot */}
                 {step === 2 && (
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
@@ -302,77 +302,8 @@ export default function Contact() {
                     className="space-y-6"
                   >
                     <h4 className="text-sm font-semibold tracking-wider text-aura-text uppercase flex items-center gap-2">
-                      <User className="w-4 h-4 text-aura-accent" />
-                      <span>{t.contact.step2}</span>
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Specialist Option: Any Available */}
-                      <label
-                        className={`p-4 rounded-2xl border-2 flex items-center space-x-3 cursor-pointer transition-all ${
-                          specialist === 'any'
-                            ? 'border-aura-accent bg-aura-primary/10'
-                            : 'border-aura-border hover:border-aura-accent/30'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="specialist"
-                          value="any"
-                          checked={specialist === 'any'}
-                          onChange={() => setSpecialist('any')}
-                          className="sr-only"
-                        />
-                        <div className="w-10 h-10 rounded-full bg-aura-primary flex items-center justify-center text-aura-accent font-serif font-bold text-sm">
-                          {t.contact.anyInitial}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-aura-text">{t.contact.anySpecialist}</p>
-                          <p className="text-[10px] text-aura-muted">{t.contact.bestAvailable}</p>
-                        </div>
-                      </label>
-
-                      {/* Specialist Options: Team DB */}
-                      {SPECIALISTS_DATA.map((spc) => (
-                        <label
-                          key={spc.id}
-                          className={`p-4 rounded-2xl border-2 flex items-center space-x-3 cursor-pointer transition-all ${
-                            specialist === spc.id
-                              ? 'border-aura-accent bg-aura-primary/10'
-                              : 'border-aura-border hover:border-aura-accent/30'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="specialist"
-                            value={spc.id}
-                            checked={specialist === spc.id}
-                            onChange={() => setSpecialist(spc.id)}
-                            className="sr-only"
-                          />
-                          <div className="w-10 h-10 rounded-full bg-aura-primary flex items-center justify-center text-aura-accent font-serif font-bold text-sm flex-shrink-0">
-                            {spc.name.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-aura-text">{spc.name}</p>
-                            <p className="text-[10px] text-aura-muted">{spc.shortRole}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* STEP 3: Select Date & Time Slot */}
-                {step === 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="space-y-6"
-                  >
-                    <h4 className="text-sm font-semibold tracking-wider text-aura-text uppercase flex items-center gap-2">
                       <CalendarDays className="w-4 h-4 text-aura-accent" />
-                      <span>{t.contact.step3}</span>
+                      <span>{t.contact.step2}</span>
                     </h4>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -415,7 +346,7 @@ export default function Contact() {
                 )}
 
                 {/* STEP 4: Client Contact Information & Booking Summary */}
-                {step === 4 && (
+                {step === 3 && (
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -425,7 +356,7 @@ export default function Contact() {
                     <div className="lg:col-span-7 space-y-4">
                       <h4 className="text-sm font-semibold tracking-wider text-aura-text uppercase flex items-center gap-2">
                         <Mail className="w-4 h-4 text-aura-accent" />
-                        <span>{t.contact.step4}</span>
+                        <span>{t.contact.step3}</span>
                       </h4>
 
                       <div className="flex flex-col space-y-1.5">
@@ -496,10 +427,6 @@ export default function Contact() {
                             {activeServiceObj?.name}
                           </p>
                           <p className="border-b border-aura-border pb-1">
-                            <span className="font-semibold block text-aura-text/80">{t.contact.practitioner}</span>
-                            {specialist === 'any' ? t.contact.anyAvailable : activeSpecialistObj?.name}
-                          </p>
-                          <p className="border-b border-aura-border pb-1">
                             <span className="font-semibold block text-aura-text/80">{t.contact.dateTime}</span>
                             {date} {t.contact.at} {timeSlot && formatTime(timeSlot, lang)}
                           </p>
@@ -514,7 +441,7 @@ export default function Contact() {
                 )}
 
                 {/* STEP 5: Success confirmation */}
-                {step === 5 && (
+                {step === 4 && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -547,7 +474,7 @@ export default function Contact() {
               </div>
 
               {/* Navigation Row */}
-              {step < 5 && (
+              {step < 4 && (
                 <div className="flex items-center justify-between border-t border-aura-border pt-6 mt-6">
                   {/* Prev Button */}
                   {step > 1 ? (
@@ -564,11 +491,11 @@ export default function Contact() {
                   )}
 
                   {/* Next / Submit Button */}
-                  {step < 4 ? (
+                  {step < 3 ? (
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      disabled={(step === 1 && (!category || !service)) || (step === 3 && (!date || !timeSlot))}
+                      disabled={(step === 1 && (!category || !service)) || (step === 2 && (!date || !timeSlot))}
                       className="px-5 py-2.5 bg-aura-accent text-white hover:bg-aura-accent-hover disabled:opacity-50 rounded-full text-xs font-semibold tracking-widest uppercase flex items-center space-x-1.5 hover:-translate-y-0.5 shadow-sm transition-all duration-300 cursor-pointer"
                     >
                       <span>{t.contact.next}</span>

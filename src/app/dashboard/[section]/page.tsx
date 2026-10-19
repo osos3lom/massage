@@ -6,12 +6,16 @@ import { NAV_ITEMS, PLANNED_SECTIONS } from '@/components/dashboard/nav';
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  if (PLANNED_SECTIONS.length === 0) {
+    return [{ section: 'planned' }];
+  }
   return PLANNED_SECTIONS.map((section) => ({ section }));
 }
 
 export default async function PlannedSectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
   const item = NAV_ITEMS.find((i) => i.href === `/dashboard/${section}`);
-  if (!item || item.ready) notFound();
+  if (!item) return <PlannedPage navKey="dashboard" />;
+  if (item.ready) notFound();
   return <PlannedPage navKey={item.key} />;
 }

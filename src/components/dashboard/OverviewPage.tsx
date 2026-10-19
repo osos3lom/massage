@@ -9,9 +9,11 @@ import {
 import { currencyLabel } from '@/i18n/config';
 import {
   THERAPISTS, DAY_END, DAY_START, PACKAGES_EXPIRING_THIS_WEEK, addDays, bookableInfo, dayStats,
-  displayStatus, therapistMinutes, type MixCategory,
+  displayStatus, therapistMinutes, toDateKey, type MixCategory,
 } from '@/data/dashboardData';
 import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
+import { usePhase1Store } from '@/data/phase1Store';
+import { usePhase34Store } from '@/data/phase34Store';
 import { useDashboard, useNow } from './useDashboard';
 import { fmtDate, fmtNumber, fmtRange } from './format';
 import { STATUS_STYLE } from './status';
@@ -63,18 +65,51 @@ export default function OverviewPage() {
   const { lang, d, data } = useDashboard();
   const now = useNow();
   const { added, patches } = useBookingsStore();
+  const { sales } = usePhase1Store();
+  const { therapists: storeTherapists, packageSessions } = usePhase34Store();
   const [tableView, setTableView] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
   const sar = currencyLabel(lang);
+
+  const activeTherapists = useMemo(() => {
+    const active = storeTherapists.filter((th) => th.isActive);
+    if (active.length === 0) return THERAPISTS;
+    return active.map((th) => ({
+      id: th.id,
+      name: { en: th.nameEn, ar: th.nameAr },
+      initials: th.initials,
+      skills: th.skills,
+    }));
+  }, [storeTherapists]);
+
+  const expiringPackagesCount = useMemo(() => {
+    const activeWithLowRemaining = packageSessions.filter((ps) => {
+      const rem = ps.totalQty - ps.usedQty;
+      return rem > 0 && rem <= 2;
+    }).length;
+    return activeWithLowRemaining > 0 ? activeWithLowRemaining : PACKAGES_EXPIRING_THIS_WEEK;
+  }, [packageSessions]);
 
   const model = useMemo(() => {
     if (!now) return null;
     const store = { added, patches };
     const today = mergeBookings(now, now, lang, store);
-    const stats = dayStats(data, today);
+    const baseStats = dayStats(data, today);
+    const todayKey = toDateKey(now);
+    const posTodayRevenue = sales
+      .filter((s) => s.status === 'completed' && !s.correctsSaleId && s.createdAtIso.slice(0, 10) === todayKey)
+      .reduce((sum, s) => sum + Math.round(s.grandTotalHalalas / 100), 0);
+    const stats = {
+      ...baseStats,
+      revenue: baseStats.revenue + posTodayRevenue,
+    };
     const week = Array.from({ length: 7 }, (_, i) => {
       const day = addDays(now, i - 6);
-      return { day, revenue: dayStats(data, mergeBookings(day, now, lang, store)).revenue };
+      const dayKey = toDateKey(day);
+      const extraPosRev = sales
+        .filter((s) => s.status === 'completed' && !s.correctsSaleId && s.createdAtIso.slice(0, 10) === dayKey)
+        .reduce((sum, s) => sum + Math.round(s.grandTotalHalalas / 100), 0);
+      return { day, revenue: dayStats(data, mergeBookings(day, now, lang, store)).revenue + extraPosRev };
     });
     const nowMin = now.getHours() * 60 + now.getMinutes();
     const upNext = today
@@ -85,12 +120,12 @@ export default function OverviewPage() {
       const items = today.filter((b) => b.status !== 'cancelled' && bookableInfo(data, b.itemId).category === k);
       return { key: k, count: items.length };
     });
-    const utilisation = THERAPISTS.map((t) => ({
+    const utilisation = activeTherapists.map((t) => ({
       t,
       pct: Math.round((therapistMinutes(today, t.id) / (DAY_END - DAY_START)) * 100),
     })).sort((a, b) => b.pct - a.pct);
     return { today, stats, week, upNext, mix, utilisation };
-  }, [now, lang, data, added, patches]);
+  }, [now, lang, data, added, patches, sales, activeTherapists]);
 
   const mixLabel: Record<MixCategory, string> = {
     massage: data.SERVICES_CATEGORIES.find((c) => c.id === 'massage')?.name ?? 'Massage',
@@ -110,7 +145,7 @@ export default function OverviewPage() {
     { icon: CalendarDays, count: stats.unassigned, label: d.overview.attentionUnassigned, tone: 'text-aura-accent bg-aura-primary' },
     { icon: Banknote, count: stats.unpaid, label: d.overview.attentionUnpaid, tone: 'text-aura-warning bg-aura-warning-bg' },
     { icon: UserX, count: stats.noShows, label: d.overview.attentionNoShow, tone: 'text-aura-danger bg-aura-danger-bg' },
-    { icon: PackageOpen, count: PACKAGES_EXPIRING_THIS_WEEK, label: d.overview.attentionPackages, tone: 'text-aura-muted bg-aura-bg' },
+    { icon: PackageOpen, count: expiringPackagesCount, label: d.overview.attentionPackages, tone: 'text-aura-muted bg-aura-bg' },
   ].filter((a) => a.count > 0);
 
   return (
@@ -286,7 +321,7 @@ export default function OverviewPage() {
             <ul className="divide-y divide-aura-border">
               {upNext.map((b) => {
                 const info = bookableInfo(data, b.itemId);
-                const therapist = THERAPISTS.find((t) => t.id === b.therapistId);
+                const therapist = activeTherapists.find((t) => t.id === b.therapistId);
                 const status = displayStatus(b)!;
                 const style = STATUS_STYLE[status];
                 const StatusIcon = style.icon;

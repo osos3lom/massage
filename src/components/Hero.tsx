@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, Compass, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/i18n/LanguageProvider';
+import { SITE_IMAGES } from '@/data/siteImages';
 
 export default function Hero() {
   const { t, data } = useLanguage();
@@ -32,7 +33,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-[95vh] flex items-center justify-center pt-24 pb-12 overflow-hidden bg-aura-bg">
+    <section className="relative min-h-[95vh] flex items-center justify-center pt-24 pb-12 overflow-hidden bg-aura-bg bg-aura-glow">
       {/* Background Zen Pattern Overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(#F8E7E9_1.5px,transparent_1.5px)] [background-size:24px_24px] opacity-30 z-0"></div>
 
@@ -44,7 +45,7 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
             className="inline-flex items-center space-x-2 bg-aura-primary/50 border border-aura-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.2em] text-aura-accent"
           >
             <span>{t.hero.badge}</span>
@@ -53,18 +54,18 @@ export default function Hero() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-5xl md:text-6xl lg:text-7xl font-serif text-aura-text leading-[1.1]"
           >
             {t.hero.line1}<br />
             {t.hero.line2}<br />
-            <span className="text-aura-accent font-light italic">{t.hero.line3}</span>
+            <span className="text-aura-metallic font-light italic pe-2">{t.hero.line3}</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-base md:text-lg text-aura-muted max-w-xl font-light leading-relaxed"
           >
             {t.hero.intro}
@@ -73,12 +74,12 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
             className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
           >
             <button
               onClick={() => handleScrollTo('contact')}
-              className="inline-flex items-center justify-center px-8 py-4 bg-aura-accent text-white font-semibold tracking-widest uppercase rounded-full shadow-md shadow-aura-accent/20 hover:bg-aura-accent-hover hover:shadow-lg hover:shadow-aura-accent/30 hover:-translate-y-0.5 transition-all duration-300 group"
+              className="inline-flex items-center justify-center px-8 py-4 bg-aura-accent bg-aura-gradient text-white font-semibold tracking-widest uppercase rounded-full shadow-md shadow-aura-accent/20 hover:bg-aura-gradient-hover hover:shadow-lg hover:shadow-aura-accent/30 hover:-translate-y-0.5 transition-all duration-300 group"
             >
               <span>{t.hero.bookAppointment}</span>
               <ArrowRight className="w-4 h-4 ms-2 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
@@ -98,14 +99,14 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="relative w-full aspect-[4/5] rounded-[20px] overflow-hidden shadow-premium z-10 border-4 border-white"
           >
             <div className="absolute inset-0 bg-black/5 z-10"></div>
             {/* Smooth Zoom Image */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=90"
+              src={SITE_IMAGES.hero}
               alt={t.hero.imageAlt}
               className="absolute inset-0 w-full h-full object-cover animate-image-zoom brightness-[1.03] saturate-[1.04] contrast-[1.02]"
             />
@@ -165,7 +166,7 @@ export default function Hero() {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-aura-text text-white font-semibold text-xs tracking-widest uppercase rounded-lg hover:bg-aura-accent transition-colors shadow-sm"
+                className="w-full py-3 bg-aura-text text-white font-semibold text-xs tracking-widest uppercase rounded-lg hover:bg-aura-espresso transition-colors shadow-sm"
               >
                 {t.hero.checkAvailability}
               </button>

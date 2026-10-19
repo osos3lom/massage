@@ -44,33 +44,37 @@ Grouped by loop, ordered by daily frequency of use. ✅ = scaffolded now.
 | **Overview** | Dashboard ✅ | `/dashboard` | 4 | `sales`, `appointments`, `therapists` (aggregates) |
 | **Front desk** | Bookings ✅ | `/dashboard/bookings` | 3 | `appointments`, `therapists`, `rooms`, `services`, `parties` |
 | | Checkout (POS) ✅ | `/pos` (full-screen, no sidebar) | 1 | `sales`, `sale_items`, `payments`, `package_sessions` |
-| | Clients | `/dashboard/clients` | 1 | `parties` (kind = customer) |
-| **Menu** | Services | `/dashboard/services` | 1 | `services`, `service_categories` |
-| | Packages & memberships | `/dashboard/packages` | 3 | `packages`, `package_sessions` |
-| | Promotions | `/dashboard/promotions` | 1 | `discounts` |
-| **Team** | Therapists | `/dashboard/therapists` | 3 | `therapists`, `therapist_availability`, `commission_rules` |
-| | Rooms | `/dashboard/rooms` | 3 | `rooms` |
-| **Money** | Sales & invoices | `/dashboard/sales` | 1 → 5 | `sales`, `payments`, ZATCA fields |
-| | Shifts & cash | `/dashboard/shifts` | 1 | `shifts` |
-| | Reports | `/dashboard/reports` | 4 | all (commissions, Z-report, occupancy) |
-| | Inventory | `/dashboard/inventory` | 4 | `products` — **only if retail is in scope** (open decision #3) |
-| **System** | Settings | `/dashboard/settings` | 0 → 7 | `company`, `branches`, `users`, `roles`, `payment_methods`, `settings` |
+| | Clients ✅ | `/dashboard/clients` | 1 | `parties` (kind = customer) |
+| **Menu** | Services ✅ | `/dashboard/services` | 1 | `services`, `service_categories` |
+| | Packages & memberships ✅ | `/dashboard/packages` | 3 | `packages`, `package_sessions` |
+| | Promotions ✅ | `/dashboard/promotions` | 1 | `discounts` |
+| **Team** | Therapists ✅ | `/dashboard/therapists` | 3 | `therapists`, `therapist_availability`, `commission_rules` |
+| | Rooms ✅ | `/dashboard/rooms` | 3 | `rooms` |
+| **Money** | Sales & invoices ✅ | `/dashboard/sales` | 1 → 5 | `sales`, `payments`, ZATCA fields |
+| | Shifts & cash ✅ | `/dashboard/shifts` | 1 | `shifts` |
+| | Reports ✅ | `/dashboard/reports` | 4 | all (commissions, Z-report, occupancy) |
+| | Inventory ✅ | `/dashboard/inventory` | 4 | `products` — **only if retail is in scope** (open decision #3) |
+| **System** | Settings ✅ | `/dashboard/settings` | 0 → 7 | `company`, `branches`, `users`, `roles`, `payment_methods`, `settings` |
 
 Sidebar footer shows the **sync state** (online / offline · pending uploads) — the
 local-first rule from `ARCHITECTURE.md` §2 should be visible to staff, not hidden.
 
-## 3. Role visibility (`roles.name`)
+## 3. Role visibility (`roles.name`) — Simplified to `admin` and `cashier`
 
-| Item | owner / admin | reception | cashier | therapist |
-|---|:-:|:-:|:-:|:-:|
-| Dashboard | full KPIs | today only | — | own day |
-| Bookings | ✓ | ✓ | view | own schedule |
-| Checkout, Shifts | ✓ | ✓ | ✓ | — |
-| Clients | ✓ | ✓ | lookup | assigned clients' notes |
-| Services, Packages, Promotions | ✓ | view | view | — |
-| Therapists, Rooms | ✓ | view | — | — |
-| Sales, Reports, Inventory, Settings | ✓ | — | own shift | own commission |
+| Item | admin | cashier |
+|---|:-:|:-:|
+| Dashboard | Full KPIs, all periods | Today's overview & arrivals |
+| Bookings | ✓ (Full schedule, assignments) | ✓ (View, check-in, book) |
+| Checkout (POS) | ✓ | ✓ |
+| Clients | ✓ | ✓ (Lookup, create, notes) |
+| Services, Packages, Promotions | ✓ | View-only |
+| Therapists, Rooms | ✓ | View schedule |
+| Shifts & Cash | ✓ (All shifts, reconciliation) | Own shift & cash drawer |
+| Sales & Invoices | ✓ (All sales, tax invoices) | Own sales & receipt reprint |
+| Reports, Inventory | ✓ | — |
+| Settings | ✓ (Company, ZATCA, Hardware, Timing) | — |
 
+> Detailed settings breakdown: see [`plan/SETTINGS.md`](./SETTINGS.md).
 Encoded as `roles` on each nav item in `src/components/dashboard/nav.ts`; enforced
 once Supabase Auth lands (Phase 0) — UI hiding is convenience, RLS is the guard.
 

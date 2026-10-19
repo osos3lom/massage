@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-aura-primary: #F8E7E9;
@@ -11,6 +15,14 @@
   --color-aura-border: #F0E4E6;
   --color-aura-surface: #FFFFFF;
 
+  /* Logo metals: sampled from the bronze emblem and wordmark */
+  --color-aura-espresso: #5C4232;
+  --color-aura-bronze: #8C6A4F;
+  --color-aura-bronze-light: #A9876A;
+  --color-aura-champagne: #D9C2A0;
+  --color-aura-champagne-soft: #EFE3CF;
+  --color-aura-rose-gold: #9E6B5F;
+
   /* Back-office status colors (always paired with an icon or label, never color alone) */
   --color-aura-success: #4F7F63;
   --color-aura-success-bg: #EAF2EC;
@@ -21,10 +33,10 @@
 
   --font-serif: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), sans-serif;
-  
+
   --shadow-premium: 0 12px 40px rgba(0, 0, 0, 0.06);
   --shadow-premium-hover: 0 20px 50px rgba(168, 107, 115, 0.12);
-  
+
   --animate-fade-in: fade-in 1s ease-out forwards;
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
   --animate-image-zoom: image-zoom 20s ease-in-out infinite alternate;
@@ -51,11 +63,6 @@
   to { transform: scale(1.08); }
 }
 
-:root {
-  --background: #FCF6F7;
-  --foreground: #2F2F2F;
-}
-
 /* Arabic typography: Arabic fonts, and no letter-spacing/italics (they break letter joining) */
 :root[lang="ar"] {
   --font-serif: var(--font-el-messiri), var(--font-playfair), Georgia, serif;
@@ -77,7 +84,6 @@ html {
 
 body {
   background-color: var(--background);
-  color: var(--foreground);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -96,7 +102,7 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A86B73;
+  background: linear-gradient(180deg, #A86B73, #8C6A4F);
 }
 
 /* Hide default calendar icon in some browsers */
@@ -130,5 +136,204 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 80mm;
     max-width: none;
     border: 0;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Logo-derived gradients
+   The logo is cast in bronze: espresso shadows, warm bronze body and
+   champagne highlights. Paired with the brand's dusty rose, it reads
+   as rose-gold — the signature of the Oasis identity.
+   ------------------------------------------------------------------ */
+
+/* Primary CTA: dusty rose melting into logo bronze, with a soft sheen on hover */
+@utility bg-aura-gradient {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-aura-accent) 0%,
+    var(--color-aura-rose-gold) 45%,
+    var(--color-aura-bronze) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  transition-property: background-position, box-shadow, transform, color;
+  transition-duration: 500ms;
+}
+
+@utility bg-aura-gradient-hover {
+  background-position: 100% 50%;
+}
+
+/* Metallic bronze, as on the emblem — for dark surfaces, dividers, icons */
+@utility bg-aura-metallic {
+  background-image: linear-gradient(
+    115deg,
+    var(--color-aura-espresso) 0%,
+    var(--color-aura-bronze) 30%,
+    var(--color-aura-champagne) 50%,
+    var(--color-aura-bronze) 70%,
+    var(--color-aura-espresso) 100%
+  );
+}
+
+/* Metallic text for display headings. Kept dark enough to stay legible on cream. */
+@utility text-aura-metallic {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-aura-espresso) 0%,
+    var(--color-aura-bronze) 35%,
+    var(--color-aura-bronze-light) 55%,
+    var(--color-aura-accent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Soft ambient wash for hero / section backgrounds */
+@utility bg-aura-glow {
+  background-image:
+    radial-gradient(60% 50% at 85% 15%, rgb(217 194 160 / 0.28) 0%, transparent 70%),
+    radial-gradient(50% 45% at 10% 90%, rgb(248 231 233 / 0.9) 0%, transparent 70%),
+    linear-gradient(180deg, var(--color-aura-bg-alt) 0%, var(--color-aura-bg) 100%);
+}
+
+/* Thin champagne-to-rose hairline, e.g. under headings */
+@utility bg-aura-hairline {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-aura-champagne) 25%,
+    var(--color-aura-accent) 75%,
+    transparent 100%
+  );
+}
+
+@theme inline {
+  --font-heading: var(--font-serif);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* shadcn tokens mapped onto the Oasis palette */
+:root {
+  --background: #FCF6F7;
+  --foreground: #2F2F2F;
+  --card: #FFFFFF;
+  --card-foreground: #2F2F2F;
+  --popover: #FFFFFF;
+  --popover-foreground: #2F2F2F;
+  --primary: #A86B73;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F8E7E9;
+  --secondary-foreground: #5C4232;
+  --muted: #F6EEEF;
+  --muted-foreground: #7A7072;
+  --accent: #F3EADF;
+  --accent-foreground: #5C4232;
+  --destructive: #B4424F;
+  --border: #F0E4E6;
+  --input: #EADADD;
+  --ring: #C9A98A;
+  --chart-1: #A86B73;
+  --chart-2: #8C6A4F;
+  --chart-3: #D9C2A0;
+  --chart-4: #4F7F63;
+  --chart-5: #5C4232;
+  --radius: 0.75rem;
+  --sidebar: #FFFDFC;
+  --sidebar-foreground: #2F2F2F;
+  --sidebar-primary: #A86B73;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F8E7E9;
+  --sidebar-accent-foreground: #5C4232;
+  --sidebar-border: #F0E4E6;
+  --sidebar-ring: #C9A98A;
+}
+
+/* Dark: an evening-spa take — espresso surfaces lit by bronze and champagne */
+.dark {
+  --background: #1C1613;
+  --foreground: #F3EADF;
+  --card: #261E1A;
+  --card-foreground: #F3EADF;
+  --popover: #261E1A;
+  --popover-foreground: #F3EADF;
+  --primary: #D9A3A9;
+  --primary-foreground: #2A1D1A;
+  --secondary: #33281F;
+  --secondary-foreground: #F3EADF;
+  --muted: #2E2520;
+  --muted-foreground: #B5A79C;
+  --accent: #3A2E25;
+  --accent-foreground: #EBD9BE;
+  --destructive: #E07A85;
+  --border: rgb(217 194 160 / 0.12);
+  --input: rgb(217 194 160 / 0.18);
+  --ring: #A88A6E;
+  --chart-1: #D9A3A9;
+  --chart-2: #C9A98A;
+  --chart-3: #EBD9BE;
+  --chart-4: #8DB89D;
+  --chart-5: #A88A6E;
+  --sidebar: #221A16;
+  --sidebar-foreground: #F3EADF;
+  --sidebar-primary: #D9A3A9;
+  --sidebar-primary-foreground: #2A1D1A;
+  --sidebar-accent: #33281F;
+  --sidebar-accent-foreground: #F3EADF;
+  --sidebar-border: rgb(217 194 160 / 0.12);
+  --sidebar-ring: #A88A6E;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  ::selection {
+    background-color: rgb(217 194 160 / 0.45);
+    color: var(--color-aura-espresso);
   }
 }

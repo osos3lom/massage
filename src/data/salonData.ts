@@ -1,4 +1,5 @@
 import type { Lang } from '@/i18n/config';
+import { SITE_IMAGES } from '@/data/siteImages';
 
 export interface ServiceItem {
   id: string;
@@ -19,24 +20,10 @@ export interface PackageItem {
   isHighlighted?: boolean;
 }
 
-export interface Specialist {
-  id: string;
-  name: string;
-  role: string;
-  shortRole: string;
-  experience: string;
-  specialization: string;
-  socials: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-  };
-}
-
 export interface GalleryItem {
   id: string;
   title: string;
-  category: 'interior' | 'spa' | 'hair' | 'skin' | 'nails';
+  category: 'rooms' | 'bath' | 'pedicure' | 'lounge';
   image: string;
 }
 
@@ -45,7 +32,6 @@ export interface Testimonial {
   name: string;
   review: string;
   rating: number;
-  photo: string;
   date: string;
 }
 
@@ -86,7 +72,7 @@ const SERVICES_RAW: Translatable<ServiceItem, 'name' | 'description' | 'duration
     },
     duration: { en: '60 Mins', ar: '60 دقيقة' },
     price: 250,
-    image: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=800&q=80',
+    image: SITE_IMAGES.services['msg-60'],
   },
   {
     id: 'msg-45',
@@ -98,7 +84,7 @@ const SERVICES_RAW: Translatable<ServiceItem, 'name' | 'description' | 'duration
     },
     duration: { en: '45 Mins', ar: '45 دقيقة' },
     price: 200,
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80',
+    image: SITE_IMAGES.services['msg-45'],
   },
   {
     id: 'bath',
@@ -110,7 +96,7 @@ const SERVICES_RAW: Translatable<ServiceItem, 'name' | 'description' | 'duration
     },
     duration: { en: '30 Mins', ar: '30 دقيقة' },
     price: 180,
-    image: 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=800&q=80',
+    image: SITE_IMAGES.services['bath'],
   },
   {
     id: 'pedicure',
@@ -122,7 +108,7 @@ const SERVICES_RAW: Translatable<ServiceItem, 'name' | 'description' | 'duration
     },
     duration: { en: '45 Mins', ar: '45 دقيقة' },
     price: 200,
-    image: 'https://images.unsplash.com/photo-1519415510236-8a5d8431393f?auto=format&fit=crop&w=800&q=80',
+    image: SITE_IMAGES.services['pedicure'],
   },
 ];
 
@@ -182,116 +168,75 @@ const PACKAGES_RAW: Translatable<PackageItem, 'name' | 'description' | 'features
   },
 ];
 
-const SPECIALISTS_RAW: Translatable<Specialist, 'name' | 'role' | 'shortRole' | 'experience' | 'specialization'>[] = [
-  {
-    id: 'spc-1',
-    name: { en: 'Elena Rostova', ar: 'إيلينا روستوفا' },
-    role: { en: 'Lead Spa Therapist & Wellness Expert', ar: 'كبيرة معالجات السبا وخبيرة العافية' },
-    shortRole: { en: 'Spa Master', ar: 'خبيرة سبا' },
-    experience: { en: '12 Years', ar: '12 سنة' },
-    specialization: {
-      en: 'Swedish, Deep Tissue & Aromatherapy Massage',
-      ar: 'المساج السويدي ومساج الأنسجة العميقة والعلاج بالزيوت العطرية',
-    },
-    socials: { instagram: '#', facebook: '#', twitter: '#' },
-  },
-  {
-    id: 'spc-2',
-    name: { en: 'Marcus Chen', ar: 'ماركوس تشين' },
-    role: { en: 'Artistic Director & Master Stylist', ar: 'المدير الفني وخبير تصفيف الشعر' },
-    shortRole: { en: 'Styling Master', ar: 'خبير تصفيف' },
-    experience: { en: '10 Years', ar: '10 سنوات' },
-    specialization: {
-      en: 'Precision Haircuts, Balayage & Creative Color',
-      ar: 'القصّات الدقيقة والبالياج والألوان الإبداعية',
-    },
-    socials: { instagram: '#', facebook: '#' },
-  },
-  {
-    id: 'spc-3',
-    name: { en: 'Sophia Al-Jamil', ar: 'صوفيا الجميل' },
-    role: { en: 'Chief Aesthetician & Skin Practitioner', ar: 'كبيرة أخصائيات التجميل والعناية بالبشرة' },
-    shortRole: { en: 'Skin Master', ar: 'خبيرة بشرة' },
-    experience: { en: '8 Years', ar: '8 سنوات' },
-    specialization: {
-      en: 'Advanced Microcurrents, Custom Peels & Hydrafacials',
-      ar: 'التيارات الدقيقة المتقدمة والتقشير المخصص والهيدرافيشل',
-    },
-    socials: { instagram: '#', twitter: '#' },
-  },
-];
-
 const GALLERY_RAW: Translatable<GalleryItem, 'title'>[] = [
   {
-    id: 'gal-1',
-    title: { en: 'Oasis Thermal Relaxation Suite', ar: 'جناح الاسترخاء الحراري' },
-    category: 'interior',
-    image: 'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-rooms',
+    title: { en: 'Private Massage Room', ar: 'غرفة المساج الخاصة' },
+    category: 'rooms',
+    image: SITE_IMAGES.gallery['gal-rooms'],
   },
   {
-    id: 'gal-2',
-    title: { en: 'Hot Stone Treatment Lounge', ar: 'صالة العلاج بالأحجار الساخنة' },
-    category: 'spa',
-    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-bath',
+    title: { en: 'Moroccan Bath Room', ar: 'غرفة الحمام المغربي' },
+    category: 'bath',
+    image: SITE_IMAGES.gallery['gal-bath'],
   },
   {
-    id: 'gal-3',
-    title: { en: 'Precision Color Styling Bar', ar: 'ركن تصفيف وصبغ الشعر' },
-    category: 'hair',
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-bath-essentials',
+    title: { en: 'Moroccan Bath Essentials', ar: 'مستلزمات الحمام المغربي' },
+    category: 'bath',
+    image: SITE_IMAGES.gallery['gal-bath-essentials'],
   },
   {
-    id: 'gal-4',
-    title: { en: 'Oxygen Infusion Treatment', ar: 'جلسة العلاج بالأكسجين' },
-    category: 'skin',
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-pedicure',
+    title: { en: 'Pedicure Corner', ar: 'ركن البديكير' },
+    category: 'pedicure',
+    image: SITE_IMAGES.gallery['gal-pedicure'],
   },
   {
-    id: 'gal-5',
-    title: { en: 'Milk & Honey Manicure Station', ar: 'ركن مانيكير الحليب والعسل' },
-    category: 'nails',
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-lounge',
+    title: { en: 'Relaxation Lounge', ar: 'صالة الاسترخاء' },
+    category: 'lounge',
+    image: SITE_IMAGES.gallery['gal-lounge'],
   },
   {
-    id: 'gal-6',
-    title: { en: 'Oasis Zen Water Garden', ar: 'حديقة الماء الهادئة' },
-    category: 'interior',
-    image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80',
+    id: 'gal-reception',
+    title: { en: 'Reception', ar: 'الاستقبال' },
+    category: 'lounge',
+    image: SITE_IMAGES.gallery['gal-reception'],
   },
 ];
 
+// Sample reviews: replace with real guest reviews before launch
 const TESTIMONIALS_RAW: Translatable<Testimonial, 'name' | 'review' | 'date'>[] = [
   {
     id: 'tst-1',
-    name: { en: 'Alexandra Vance', ar: 'ألكسندرا فانس' },
+    name: { en: 'A. M.', ar: 'أ. م.' },
     review: {
-      en: 'Relaxation Oasis is a masterpiece of tranquility. The moment you walk through the doors, you leave the noise of the city behind. The aromatherapy Swedish massage was simply transcendent. Clean, highly professional, and gorgeous interiors.',
-      ar: 'واحة الإسترخاء تحفة من الهدوء. بمجرد أن تعبر الأبواب تترك ضجيج المدينة خلفك. كان المساج السويدي بالزيوت العطرية رائعاً بحق. مكان نظيف واحترافي للغاية وديكور داخلي خلّاب.',
+      en: 'The one-hour massage was wonderful and focused exactly on where I carry tension. The place is calm and very clean.',
+      ar: 'جلسة المساج لمدة ساعة كانت رائعة، وركّزت تماماً على مناطق التوتر. المكان هادئ ونظيف جداً.',
     },
     rating: 5,
-    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
-    date: { en: '2 weeks ago', ar: 'منذ أسبوعين' },
+    date: { en: '1 week ago', ar: 'منذ أسبوع' },
   },
   {
     id: 'tst-2',
-    name: { en: 'Julianne Thorne', ar: 'جوليان ثورن' },
+    name: { en: 'S. F.', ar: 'س. ف.' },
     review: {
-      en: 'Marcus Chen is a magician. I went in for a full balayage and style, and the results exceeded my expectations. The color is incredibly rich, natural, and my hair feels healthier than ever. The tea service was also a lovely touch.',
-      ar: 'ماركوس تشين ساحر حقيقي. ذهبت لعمل بالياج كامل وتصفيف، وفاقت النتائج توقعاتي. اللون غني وطبيعي بشكل مذهل، وشعري يبدو أكثر صحة من أي وقت مضى. وكانت ضيافة الشاي لمسة جميلة أيضاً.',
+      en: 'I tried the Moroccan bath for the first time and it was a special experience. My skin felt so soft, and the service was excellent.',
+      ar: 'جربت الحمام المغربي لأول مرة وكانت تجربة مميزة. صارت بشرتي ناعمة جداً والخدمة ممتازة.',
     },
     rating: 5,
-    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-    date: { en: '3 weeks ago', ar: 'منذ 3 أسابيع' },
+    date: { en: '2 weeks ago', ar: 'منذ أسبوعين' },
   },
   {
     id: 'tst-3',
-    name: { en: 'Genevieve Dupond', ar: 'جينيفيف دوبون' },
+    name: { en: 'R. K.', ar: 'ر. ك.' },
     review: {
-      en: 'The Hydra-Radiance facial here is worth every dollar. My skin has never felt this hydrated and glowing. Sophia was extremely informative and tailored the treatment to my sensitive skin. Highly recommend the monthly membership.',
-      ar: 'جلسة الأكسجين للترطيب والإشراق هنا تستحق كل دولار. لم تكن بشرتي بهذا الترطيب والإشراق من قبل. كانت صوفيا غنية بالمعلومات وصمّمت العلاج ليناسب بشرتي الحساسة. أنصح بشدة بالعضوية الشهرية.',
+      en: 'The Royal Package is worth every riyal: massage, Moroccan bath, and pedicure in one visit. I will definitely be back.',
+      ar: 'الباكيج الملكي يستحق كل ريال: مساج وحمام مغربي وبديكير في زيارة واحدة. سأعود بالتأكيد.',
     },
     rating: 5,
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80',
     date: { en: '1 month ago', ar: 'منذ شهر' },
   },
 ];
@@ -304,52 +249,52 @@ const FAQ_RAW: Translatable<FAQItem, 'question' | 'answer'>[] = [
       ar: 'كم من الوقت يجب أن أصل قبل موعدي؟',
     },
     answer: {
-      en: 'We recommend arriving 15 to 20 minutes prior to your scheduled time. This allows you to check in, complete our briefly tailored skin/health questionnaire, change into a plush organic robe, and unwind in our thermal steam lounge with a complimentary herbal infusion.',
-      ar: 'ننصح بالوصول قبل موعدك بـ 15 إلى 20 دقيقة. يتيح لك ذلك تسجيل الوصول، وتعبئة استبيان قصير عن البشرة والصحة، وارتداء رداء عضوي ناعم، والاسترخاء في صالة البخار الحرارية مع مشروب أعشاب مجاني.',
+      en: 'We recommend arriving 10 to 15 minutes early so you can check in and settle in calmly before your session.',
+      ar: 'ننصح بالوصول قبل موعدك بـ 10 إلى 15 دقيقة لتسجيل الوصول والاستعداد للجلسة بهدوء.',
     },
   },
   {
     id: 'faq-2',
     question: {
-      en: 'What is Relaxation Oasis’s cancellation and rescheduling policy?',
-      ar: 'ما هي سياسة الإلغاء وإعادة الجدولة في واحة الإسترخاء؟',
+      en: 'Can I book the Moroccan bath on its own?',
+      ar: 'هل يمكنني حجز الحمام المغربي وحده؟',
     },
     answer: {
-      en: 'We value our specialists’ schedules and our clients’ needs. We kindly ask for at least 24 hours notice for any rescheduling or cancellations. Cancellations within 24 hours of the service time will incur a 50% service charge. No-shows will be charged at 100%.',
-      ar: 'نحن نقدّر جداول أخصائيينا واحتياجات عملائنا، لذا نرجو إبلاغنا قبل 24 ساعة على الأقل لأي إعادة جدولة أو إلغاء. يترتب على الإلغاء خلال 24 ساعة من موعد الخدمة رسوم بنسبة 50% من قيمتها، ويُحتسب عدم الحضور بنسبة 100%.',
+      en: 'Yes. The Moroccan bath (180 SAR) can be booked as a single service, or as part of a package with a massage at a better price.',
+      ar: 'نعم، يمكنك حجز الحمام المغربي (180 ر.س) كخدمة مستقلة، أو ضمن أحد الباكيجات مع المساج بسعر أفضل.',
     },
   },
   {
     id: 'faq-3',
     question: {
-      en: 'Can I request a specific therapist or specialist for my treatments?',
-      ar: 'هل يمكنني طلب معالج أو أخصائي محدد لعلاجاتي؟',
+      en: 'What is the difference between the packages?',
+      ar: 'ما الفرق بين الباكيجات؟',
     },
     answer: {
-      en: 'Absolutely. When booking online through our custom client form or over the phone, you can choose a specific therapist (e.g., Elena, Marcus, Sophia). If you prefer any available specialist, our booking algorithm will assign the best suited match.',
-      ar: 'بالتأكيد. عند الحجز عبر نموذج الحجز الإلكتروني أو عبر الهاتف، يمكنك اختيار معالج محدد (مثل إيلينا أو ماركوس أو صوفيا). وإذا كنت تفضّل أي أخصائي متاح، فسيختار نظام الحجز الأنسب لك.',
+      en: 'Every package includes a 30-minute Moroccan bath; the massage length changes: 30 minutes (250 SAR), 45 minutes (300 SAR), or one hour (350 SAR). The Royal Package (500 SAR) adds a pedicure to a one-hour massage and a 30-minute Moroccan bath.',
+      ar: 'جميع الباكيجات تشمل نصف ساعة حمام مغربي، ويختلف وقت المساج: نصف ساعة (250 ر.س)، أو 45 دقيقة (300 ر.س)، أو ساعة (350 ر.س). أما الباكيج الملكي (500 ر.س) فيشمل ساعة مساج ونصف ساعة حمام مغربي وبديكير.',
     },
   },
   {
     id: 'faq-4',
     question: {
-      en: 'Are all treatments suitable during pregnancy?',
-      ar: 'هل جميع العلاجات مناسبة أثناء الحمل؟',
+      en: 'How do I cancel or reschedule my appointment?',
+      ar: 'كيف ألغي موعدي أو أغيّره؟',
     },
     answer: {
-      en: 'Many of our massage treatments, facials, and nail care therapies can be customized for pre-natal care. Please notify us during booking so our specialists can use safe, organic pregnancy-approved botanical oils and position you comfortably.',
-      ar: 'يمكن تكييف العديد من جلسات المساج والفيشل والعناية بالأظافر لتناسب فترة الحمل. يرجى إبلاغنا عند الحجز ليستخدم أخصائيونا زيوتاً نباتية عضوية آمنة ومعتمدة للحوامل ويضعوك في وضعية مريحة.',
+      en: 'Please let us know at least 24 hours in advance so we can offer the slot to another guest.',
+      ar: 'نرجو إبلاغنا قبل 24 ساعة على الأقل حتى نتمكن من إتاحة الموعد لضيف آخر.',
     },
   },
   {
     id: 'faq-5',
     question: {
-      en: 'Can I purchase the skincare products used during my facial?',
-      ar: 'هل يمكنني شراء منتجات العناية بالبشرة المستخدمة في جلسة الفيشل؟',
+      en: 'Are the services suitable during pregnancy or with health conditions?',
+      ar: 'هل الخدمات مناسبة أثناء الحمل أو مع وجود حالات صحية؟',
     },
     answer: {
-      en: 'Yes! We carry complete retail product lines of the organic, medical-grade botanical brands used in our facials and skin therapies. Your aesthetician will provide a personalized skincare chart and recommendations after your treatment.',
-      ar: 'نعم! نوفّر مجموعات كاملة من منتجات العلامات النباتية العضوية الطبية المستخدمة في جلسات الفيشل وعلاجات البشرة، وستقدّم لك أخصائية التجميل جدولاً شخصياً للعناية بالبشرة وتوصيات بعد العلاج.',
+      en: 'If you are pregnant or have a health condition, please tell us when booking and check with your doctor first, especially before the Moroccan bath because of the heat and steam.',
+      ar: 'إذا كنتِ حاملاً أو لديك حالة صحية، يرجى إبلاغنا عند الحجز واستشارة طبيبك أولاً، خاصة قبل الحمام المغربي بسبب الحرارة والبخار.',
     },
   },
 ];
@@ -374,7 +319,6 @@ export function getSalonData(lang: Lang) {
     SERVICES_CATEGORIES: SERVICES_CATEGORIES_RAW.map((c) => ({ id: c.id, name: c.name[lang] })),
     SERVICES_DATA: SERVICES_RAW.map((s) => localize(s, lang) as ServiceItem),
     PACKAGES_DATA: PACKAGES_RAW.map((p) => localize(p, lang) as PackageItem),
-    SPECIALISTS_DATA: SPECIALISTS_RAW.map((s) => localize(s, lang) as Specialist),
     GALLERY_DATA: GALLERY_RAW.map((g) => localize(g, lang) as GalleryItem),
     TESTIMONIALS_DATA: TESTIMONIALS_RAW.map((t) => localize(t, lang) as Testimonial),
     FAQ_DATA: FAQ_RAW.map((f) => localize(f, lang) as FAQItem),

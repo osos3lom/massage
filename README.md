@@ -10,7 +10,7 @@ A premium full-stack-inspired spa and wellness website built for luxury spas, be
 
 واحة الإسترخاء للمساج was designed to provide premium wellness businesses with an elegant online presence that reflects relaxation, luxury, and professionalism.
 
-Visitors can explore spa treatments, wellness packages, beauty specialists, gallery, FAQs, and contact information while enjoying smooth animations and a calming user experience.
+Visitors can explore spa treatments, wellness packages, gallery, FAQs, and contact information while enjoying smooth animations and a calming user experience.
 
 This project was built to strengthen my frontend development skills using modern React architecture, reusable components, responsive design principles, animations, accessibility, and production-ready UI development.
 
@@ -38,13 +38,6 @@ This project was built to strengthen my frontend development skills using modern
 - Featured offers
 - Membership options
 - Clean pricing layout
-
-### 👩‍⚕️ Wellness Specialists
-
-- Therapist profiles
-- Specialist information
-- Professional experience
-- Team showcase
 
 ### 🖼️ Gallery
 
@@ -109,11 +102,11 @@ This project was built to strengthen my frontend development skills using modern
 
 ---
 
-### 👩‍⚕️ Specialists & Gallery
+### 🖼️ Gallery
 
-| Specialists | Gallery |
-|-------------|---------|
-| ![](screenshots/05-specialists.png) | ![](screenshots/06-gallery.png) |
+<p align="center">
+  <img src="screenshots/06-gallery.png" width="80%">
+</p>
 
 ---
 

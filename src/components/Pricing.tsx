@@ -8,11 +8,10 @@ import { currencyLabel } from '@/i18n/config';
 export default function Pricing() {
   const { t, data, lang } = useLanguage();
   const { PACKAGES_DATA } = data;
-  const handleScrollTo = (id: string) => {
-    const target = document.getElementById(id);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleBookPackage = (packageId: string) => {
+    // The booking form listens for this and preselects the package
+    window.dispatchEvent(new CustomEvent('service-booking-select', { detail: { serviceId: packageId } }));
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -42,7 +41,7 @@ export default function Pricing() {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
+              transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
               key={pkg.id}
               className={`relative rounded-[20px] bg-white p-8 flex flex-col justify-between border transition-all duration-500 hover:-translate-y-1.5 ${
                 pkg.isHighlighted
@@ -91,7 +90,7 @@ export default function Pricing() {
               {/* CTA Action button */}
               <div className="mt-8 pt-6 border-t border-aura-border">
                 <button
-                  onClick={() => handleScrollTo('contact')}
+                  onClick={() => handleBookPackage(pkg.id)}
                   className={`w-full py-4 text-xs font-semibold tracking-widest uppercase rounded-full transition-all duration-300 hover:-translate-y-0.5 cursor-pointer ${
                     pkg.isHighlighted
                       ? 'bg-aura-accent text-white shadow-md shadow-aura-accent/20 hover:bg-aura-accent-hover hover:shadow-lg'

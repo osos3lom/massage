@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { CalendarClock, CircleCheck, CreditCard, LogIn, Phone, UserX, X } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
 import {
-  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, ROOMS, THERAPISTS, bookableInfo, displayStatus,
+  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, bookableInfo, displayStatus,
   minutesToHHMM, toDateKey, type Booking, type BookableId,
 } from '@/data/dashboardData';
+import { usePhase34Store } from '@/data/phase34Store';
 import { useDashboard } from './useDashboard';
 import { fmtDate, fmtNumber, fmtRange } from './format';
 import { STATUS_STYLE } from './status';
@@ -50,11 +51,12 @@ export function BookingDetails({
   onUpdate: (patch: Partial<Booking>) => void;
 }) {
   const { lang, d, data } = useDashboard();
+  const { therapists: p34Therapists, rooms: p34Rooms } = usePhase34Store();
   const info = bookableInfo(data, booking.itemId);
-  const therapist = THERAPISTS.find((t) => t.id === booking.therapistId);
-  const room = ROOMS.find((r) => r.id === booking.roomId);
+  const therapist = p34Therapists.find((t) => t.id === booking.therapistId);
+  const room = p34Rooms.find((r) => r.id === booking.roomId);
   const status = displayStatus(booking);
-  const capable = THERAPISTS.filter((t) => info.needs.every((k) => t.skills.includes(k)));
+  const capable = p34Therapists.filter((t) => t.isActive && info.needs.every((k) => t.skills.includes(k)));
   const btn = 'inline-flex items-center justify-center gap-2 h-10 px-4 rounded-full text-sm font-medium transition-colors';
 
   return (
@@ -81,7 +83,7 @@ export function BookingDetails({
         <Row label={d.bookings.details.time}>{fmtRange(booking.start, booking.duration, lang)}</Row>
         <Row label={d.bookings.details.therapist}>
           {therapist ? (
-            therapist.name[lang]
+            lang === 'ar' ? therapist.nameAr : therapist.nameEn
           ) : (
             <select
               aria-label={d.bookings.details.assign}
@@ -91,12 +93,12 @@ export function BookingDetails({
             >
               <option value="" disabled>{d.bookings.details.assign}</option>
               {capable.map((t) => (
-                <option key={t.id} value={t.id}>{t.name[lang]}</option>
+                <option key={t.id} value={t.id}>{lang === 'ar' ? t.nameAr : t.nameEn}</option>
               ))}
             </select>
           )}
         </Row>
-        <Row label={d.bookings.details.room}>{room?.name[lang]}</Row>
+        <Row label={d.bookings.details.room}>{room ? (lang === 'ar' ? room.nameAr : room.nameEn) : '—'}</Row>
         <Row label={d.bookings.details.price}>
           <span className="tabular-nums">{fmtNumber(info.price, lang)} {currencyLabel(lang)}</span>
         </Row>
@@ -147,11 +149,12 @@ export function NewBookingForm({
   onCreate: (dateKey: string, booking: Booking) => void;
 }) {
   const { lang, d, data } = useDashboard();
+  const { therapists: p34Therapists, rooms: p34Rooms } = usePhase34Store();
   const [itemId, setItemId] = useState<BookableId>('msg-60');
   const [therapistId, setTherapistId] = useState('');
   const [dateKey, setDateKey] = useState(toDateKey(date));
   const [time, setTime] = useState('12:00');
-  const capable = THERAPISTS.filter((t) => BOOKABLES[itemId].needs.every((k) => t.skills.includes(k)));
+  const capable = p34Therapists.filter((t) => t.isActive && BOOKABLES[itemId].needs.every((k) => t.skills.includes(k)));
   const field = 'w-full h-11 rounded-2xl border border-aura-border bg-aura-bg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-aura-accent/30';
   const label = 'block text-xs font-medium text-aura-muted mb-1.5';
 
@@ -166,7 +169,7 @@ export function NewBookingForm({
       phone: String(form.get('phone') || ''),
       itemId,
       therapistId: therapistId || null,
-      roomId: ROOMS.find((r) => r.forKind === kind)!.id,
+      roomId: p34Rooms.find((r) => r.forKind === kind)?.id ?? '',
       start: h * 60 + m,
       duration: BOOKABLES[itemId].duration,
       status: 'booked',
@@ -220,7 +223,7 @@ export function NewBookingForm({
           <select id="nb-therapist" value={therapistId} onChange={(e) => setTherapistId(e.target.value)} className={field}>
             <option value="">{d.bookings.form.anyTherapist}</option>
             {capable.map((t) => (
-              <option key={t.id} value={t.id}>{t.name[lang]}</option>
+              <option key={t.id} value={t.id}>{lang === 'ar' ? t.nameAr : t.nameEn}</option>
             ))}
           </select>
         </div>

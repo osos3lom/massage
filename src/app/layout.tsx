@@ -35,7 +35,7 @@ const { brand, meta } = dictionaries[DEFAULT_LANG];
 export const metadata: Metadata = {
   title: meta.title,
   description: meta.description,
-  keywords: ["spa", "massage", "facial", "hair styling", "nail care", "luxury wellness", "مساج", "سبا", "واحة الإسترخاء", "beauty treatments"],
+  keywords: ["massage", "Moroccan bath", "pedicure", "Jeddah", "Al Nuzha", "Relaxation Oasis", "مساج", "حمام مغربي", "بديكير", "جدة", "حي النزهة", "واحة الإسترخاء"],
   authors: [{ name: brand.name }],
   openGraph: {
     title: meta.ogTitle,

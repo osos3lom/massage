@@ -3,7 +3,6 @@ import Hero from '@/components/Hero';
 import About from '@/components/About';
 import Services from '@/components/Services';
 import Pricing from '@/components/Pricing';
-import Specialists from '@/components/Specialists';
 import Gallery from '@/components/Gallery';
 import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
@@ -29,9 +28,6 @@ export default function Home() {
 
         {/* Pricing Packages Section */}
         <Pricing />
-
-        {/* Specialists Team Section */}
-        <Specialists />
 
         {/* Gallery Masonry Section */}
         <Gallery />

@@ -10,7 +10,7 @@ import type { DashboardDictionary } from '@/i18n/dashboardDictionary';
  * from src/app/dashboard/[section]. `roles` is enforced once Supabase Auth lands.
  */
 
-export type Role = 'owner' | 'admin' | 'reception' | 'cashier' | 'therapist';
+export type Role = 'admin' | 'cashier';
 type GroupKey = keyof DashboardDictionary['nav']['groups'];
 export type NavKey = keyof DashboardDictionary['nav']['items'];
 
@@ -24,8 +24,8 @@ export interface NavItem {
   tables: string[];
 }
 
-const ALL: Role[] = ['owner', 'admin', 'reception', 'cashier', 'therapist'];
-const MGMT: Role[] = ['owner', 'admin'];
+const ALL: Role[] = ['admin', 'cashier'];
+const MGMT: Role[] = ['admin'];
 
 export const NAV: { group: GroupKey; items: NavItem[] }[] = [
   {
@@ -38,38 +38,38 @@ export const NAV: { group: GroupKey; items: NavItem[] }[] = [
     group: 'frontDesk',
     items: [
       { key: 'bookings', href: '/dashboard/bookings', icon: CalendarDays, phase: 3, ready: true, roles: ALL, tables: ['appointments', 'therapists', 'rooms', 'services', 'parties'] },
-      { key: 'pos', href: '/pos', icon: CreditCard, phase: 1, ready: true, roles: [...MGMT, 'reception', 'cashier'], tables: ['sales', 'sale_items', 'payments', 'package_sessions'] },
-      { key: 'clients', href: '/dashboard/clients', icon: Users, phase: 1, roles: ALL, tables: ['parties'] },
+      { key: 'pos', href: '/pos', icon: CreditCard, phase: 1, ready: true, roles: ALL, tables: ['sales', 'sale_items', 'payments', 'package_sessions'] },
+      { key: 'clients', href: '/dashboard/clients', icon: Users, phase: 1, ready: true, roles: ALL, tables: ['parties'] },
     ],
   },
   {
     group: 'menu',
     items: [
-      { key: 'services', href: '/dashboard/services', icon: Sparkles, phase: 1, roles: [...MGMT, 'reception', 'cashier'], tables: ['services', 'service_categories'] },
-      { key: 'packages', href: '/dashboard/packages', icon: PackageOpen, phase: 3, roles: [...MGMT, 'reception', 'cashier'], tables: ['packages', 'package_sessions'] },
-      { key: 'promotions', href: '/dashboard/promotions', icon: BadgePercent, phase: 1, roles: [...MGMT, 'reception', 'cashier'], tables: ['discounts'] },
+      { key: 'services', href: '/dashboard/services', icon: Sparkles, phase: 1, ready: true, roles: ALL, tables: ['services', 'service_categories'] },
+      { key: 'packages', href: '/dashboard/packages', icon: PackageOpen, phase: 3, ready: true, roles: ALL, tables: ['packages', 'package_sessions'] },
+      { key: 'promotions', href: '/dashboard/promotions', icon: BadgePercent, phase: 1, ready: true, roles: ALL, tables: ['discounts'] },
     ],
   },
   {
     group: 'team',
     items: [
-      { key: 'therapists', href: '/dashboard/therapists', icon: UserRound, phase: 3, roles: [...MGMT, 'reception'], tables: ['therapists', 'therapist_availability', 'commission_rules'] },
-      { key: 'rooms', href: '/dashboard/rooms', icon: DoorOpen, phase: 3, roles: [...MGMT, 'reception'], tables: ['rooms'] },
+      { key: 'therapists', href: '/dashboard/therapists', icon: UserRound, phase: 3, ready: true, roles: ALL, tables: ['therapists', 'therapist_availability', 'commission_rules'] },
+      { key: 'rooms', href: '/dashboard/rooms', icon: DoorOpen, phase: 3, ready: true, roles: ALL, tables: ['rooms'] },
     ],
   },
   {
     group: 'money',
     items: [
-      { key: 'sales', href: '/dashboard/sales', icon: ReceiptText, phase: 1, roles: [...MGMT, 'cashier'], tables: ['sales', 'sale_items', 'payments'] },
-      { key: 'shifts', href: '/dashboard/shifts', icon: Wallet, phase: 1, roles: [...MGMT, 'reception', 'cashier'], tables: ['shifts'] },
-      { key: 'reports', href: '/dashboard/reports', icon: ChartColumn, phase: 4, roles: MGMT, tables: ['sales', 'sale_items', 'appointments', 'commission_rules'] },
-      { key: 'inventory', href: '/dashboard/inventory', icon: Boxes, phase: 4, roles: MGMT, tables: ['products'] },
+      { key: 'sales', href: '/dashboard/sales', icon: ReceiptText, phase: 1, ready: true, roles: ALL, tables: ['sales', 'sale_items', 'payments'] },
+      { key: 'shifts', href: '/dashboard/shifts', icon: Wallet, phase: 1, ready: true, roles: ALL, tables: ['shifts'] },
+      { key: 'reports', href: '/dashboard/reports', icon: ChartColumn, phase: 4, ready: true, roles: MGMT, tables: ['sales', 'sale_items', 'appointments', 'commission_rules'] },
+      { key: 'inventory', href: '/dashboard/inventory', icon: Boxes, phase: 4, ready: true, roles: MGMT, tables: ['products'] },
     ],
   },
   {
     group: 'system',
     items: [
-      { key: 'settings', href: '/dashboard/settings', icon: Settings, phase: 0, roles: MGMT, tables: ['company', 'branches', 'users', 'roles', 'payment_methods', 'settings'] },
+      { key: 'settings', href: '/dashboard/settings', icon: Settings, phase: 0, ready: true, roles: MGMT, tables: ['company', 'branches', 'users', 'roles', 'payment_methods', 'settings'] },
     ],
   },
 ];

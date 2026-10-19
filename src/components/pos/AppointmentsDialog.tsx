@@ -4,10 +4,11 @@ import { useMemo, useRef, useState } from 'react';
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, ListChecks, LogIn, Plus, Search } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
 import {
-  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, ROOMS, THERAPISTS, addDays, bookableInfo, displayStatus,
+  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, addDays, bookableInfo, displayStatus,
   minutesToHHMM, startOfDay, toDateKey, type Booking, type BookableId,
 } from '@/data/dashboardData';
 import { addBooking, mergeBookings, useBookingsStore } from '@/data/bookingsStore';
+import { usePhase34Store } from '@/data/phase34Store';
 import { toHalalas } from '@/data/posData';
 import { dashboardDictionaries } from '@/i18n/dashboardDictionary';
 import { fmtDate, fmtMinutes, fmtRange } from '@/components/dashboard/format';
@@ -78,6 +79,7 @@ function Schedule({
   onCheckIn: (id: string) => void;
 }) {
   const { lang, p, data, money } = usePos();
+  const { therapists: p34Therapists } = usePhase34Store();
   const [day, setDay] = useState(() => startOfDay(now));
   const [q, setQ] = useState('');
 
@@ -122,7 +124,7 @@ function Schedule({
         <ul className="divide-y divide-aura-border max-h-[50vh] overflow-y-auto">
           {bookings.map((b) => {
             const info = bookableInfo(data, b.itemId);
-            const therapist = THERAPISTS.find((x) => x.id === b.therapistId);
+            const therapist = p34Therapists.find((x) => x.id === b.therapistId);
             const ds = displayStatus(b)!;
             const style = STATUS_STYLE[ds];
             const onTicket = ticketBookingIds.has(b.id);
@@ -136,7 +138,7 @@ function Schedule({
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-medium truncate">{b.client}</span>
                   <span className="block text-xs text-aura-muted truncate">
-                    {info.name} · {therapist?.name[lang] ?? statusText.unassigned}
+                    {info.name} · {therapist ? (lang === 'ar' ? therapist.nameAr : therapist.nameEn) : statusText.unassigned}
                   </span>
                 </span>
                 <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs ${style.chip}`}>
@@ -182,6 +184,7 @@ function Schedule({
 
 function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) => void; onClose: () => void }) {
   const { lang, p, data } = usePos();
+  const { therapists: p34Therapists, rooms: p34Rooms } = usePhase34Store();
   const [itemId, setItemId] = useState<BookableId>('msg-60');
   const [therapistId, setTherapistId] = useState('');
   const [dateKey, setDateKey] = useState(toDateKey(now));
@@ -190,7 +193,7 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
   // Which button submitted: book only, or book and drop onto the current ticket
   const intent = useRef<'save' | 'ticket'>('save');
 
-  const capable = THERAPISTS.filter((t) => BOOKABLES[itemId].needs.every((k) => t.skills.includes(k)));
+  const capable = p34Therapists.filter((t) => t.isActive && BOOKABLES[itemId].needs.every((k) => t.skills.includes(k)));
   const services = BOOKABLE_IDS.filter((id) => !id.startsWith('pkg'));
   const packages = BOOKABLE_IDS.filter((id) => id.startsWith('pkg'));
   const field = 'w-full h-11 rounded-2xl border border-aura-border bg-aura-bg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-aura-accent/30';
@@ -208,7 +211,7 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
         phone: String(fd.get('phone') || ''),
         itemId,
         therapistId: therapistId || null,
-        roomId: ROOMS.find((r) => r.forKind === kind)!.id,
+        roomId: p34Rooms.find((r) => r.forKind === kind)?.id ?? '',
         start: h * 60 + m,
         duration: BOOKABLES[itemId].duration,
         status: 'booked',
@@ -296,7 +299,7 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
         <select id="ap-therapist" value={therapistId} onChange={(e) => setTherapistId(e.target.value)} className={field}>
           <option value="">{p.appt.form.anyTherapist}</option>
           {capable.map((x) => (
-            <option key={x.id} value={x.id}>{x.name[lang]}</option>
+            <option key={x.id} value={x.id}>{lang === 'ar' ? x.nameAr : x.nameEn}</option>
           ))}
         </select>
       </div>

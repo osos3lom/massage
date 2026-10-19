@@ -4,18 +4,21 @@ import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  CalendarDays, Cloud, CloudOff, Droplets, Footprints, Hand, Lock, LogOut, PackageOpen, Plus, Trash2, UserPlus, X,
+  CalendarDays, Cloud, CloudOff, Droplets, Footprints, Hand, Lock, LogOut, PackageOpen, Plus, ShoppingBag, Trash2, UserPlus, X,
   LayoutDashboard, type LucideIcon,
 } from 'lucide-react';
-import { asset } from '@/i18n/config';
+import { asset, type Lang } from '@/i18n/config';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
-  BOOKABLE_IDS, THERAPISTS, bookableInfo, minutesOfDay, type Booking, type BookableId, type MixCategory,
+  BOOKABLE_IDS, THERAPISTS, bookableInfo, minutesOfDay, type Booking, type BookableId, type MixCategory, type ServiceKind,
 } from '@/data/dashboardData';
 import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
+import { getSalonData } from '@/data/salonData';
+import { usePhase1Store } from '@/data/phase1Store';
+import { usePhase34Store } from '@/data/phase34Store';
 import {
   DISCOUNTS, TERMINAL_ID, discountAmount, receiptNo, toHalalas, vatOf,
-  type Cashier, type CompletedSale, type Payment, type TicketLine,
+  type Cashier, type CompletedSale, type Discount, type Payment, type TicketLine,
 } from '@/data/posData';
 import { useNow, useOnline } from '@/components/dashboard/useDashboard';
 import { fmtMinutes } from '@/components/dashboard/format';
@@ -25,12 +28,27 @@ import ShiftDialog from './ShiftDialog';
 import AppointmentsDialog from './AppointmentsDialog';
 import { usePos } from './usePos';
 
-const CATEGORY_ICON: Record<MixCategory, LucideIcon> = {
+type PosCategory = MixCategory | 'product';
+
+const CATEGORY_ICON: Record<PosCategory, LucideIcon> = {
   massage: Hand,
   'moroccan-bath': Droplets,
   pedicure: Footprints,
   package: PackageOpen,
+  product: ShoppingBag,
 };
+
+interface PosCatalogItem {
+  id: string;
+  category: PosCategory;
+  name: Record<Lang, string>;
+  duration?: number;
+  priceSar: number;
+  needs: ServiceKind[];
+  isProduct?: boolean;
+  productId?: string;
+  stockQty?: number;
+}
 
 type QueueKind = 'awaiting' | 'inTreatment' | 'arriving';
 
@@ -48,9 +66,17 @@ export default function PosApp() {
   const now = useNow();
   const online = useOnline();
   const { added, patches, patchBooking } = useBookingsStore();
+  const { services, promotions, nextReceiptSeq, recordCompletedPosSale } = usePhase1Store();
+  const {
+    packages: storePackages,
+    products: storeProducts,
+    therapists: storeTherapists,
+    adjustProductStock,
+    redeemPackageSession,
+  } = usePhase34Store();
   const [cashier, setCashier] = useState<Cashier | null>(null);
   const [shiftOpenedAt, setShiftOpenedAt] = useState<Date | null>(null);
-  const [category, setCategory] = useState<MixCategory | 'all'>('all');
+  const [category, setCategory] = useState<PosCategory | 'all'>('all');
   const [ticket, setTicket] = useState<Ticket>(EMPTY_TICKET);
   const [sales, setSales] = useState<CompletedSale[]>([]);
   // Receipt numbers never reset with the shift — BRANCH-TERMINAL-SEQ must stay unique
@@ -59,6 +85,77 @@ export default function PosApp() {
   const [receipt, setReceipt] = useState<CompletedSale | null>(null);
   const [closingShift, setClosingShift] = useState(false);
   const [showAppointments, setShowAppointments] = useState(false);
+
+  // Merge active therapists from phase34Store with static THERAPISTS
+  const activeTherapists = useMemo(() => {
+    const active = storeTherapists.filter((th) => th.isActive);
+    if (active.length === 0) return THERAPISTS;
+    return active.map((th) => ({
+      id: th.id,
+      name: { en: th.nameEn, ar: th.nameAr },
+      initials: th.initials,
+      skills: th.skills,
+    }));
+  }, [storeTherapists]);
+
+  // Build unified catalog from phase1Store.services, phase34Store.packages, and phase34Store.products
+  const catalogItems = useMemo<PosCatalogItem[]>(() => {
+    const list: PosCatalogItem[] = [];
+    for (const s of services) {
+      if (!s.isActive) continue;
+      list.push({
+        id: s.id,
+        category: s.category,
+        name: { en: s.nameEn, ar: s.nameAr },
+        duration: s.durationMin,
+        priceSar: s.priceSar,
+        needs: [s.category],
+      });
+    }
+    for (const pkg of storePackages) {
+      if (!pkg.isActive) continue;
+      list.push({
+        id: pkg.id,
+        category: 'package',
+        name: { en: pkg.nameEn, ar: pkg.nameAr },
+        duration: 90,
+        priceSar: pkg.priceSar,
+        needs: ['massage'],
+      });
+    }
+    for (const prod of storeProducts) {
+      if (!prod.isActive) continue;
+      list.push({
+        id: prod.id,
+        category: 'product',
+        name: { en: prod.nameEn, ar: prod.nameAr },
+        priceSar: prod.priceSar,
+        needs: [],
+        isProduct: true,
+        productId: prod.id,
+        stockQty: prod.stockQty,
+      });
+    }
+    return list;
+  }, [services, storePackages, storeProducts]);
+
+  const catalogById = useMemo(() => {
+    const map = new Map<string, PosCatalogItem>();
+    for (const item of catalogItems) map.set(item.id, item);
+    return map;
+  }, [catalogItems]);
+
+  // Merge active promotions from phase1Store with fallback DISCOUNTS
+  const activeDiscounts = useMemo<Discount[]>(() => {
+    const active = promotions.filter((pr) => pr.isActive);
+    if (active.length === 0) return DISCOUNTS;
+    return active.map((pr) => ({
+      id: pr.id,
+      name: { en: pr.nameEn, ar: pr.nameAr },
+      kind: pr.kind,
+      value: pr.value,
+    }));
+  }, [promotions]);
 
   const ticketBookingIds = useMemo(
     () => new Set(ticket.lines.flatMap((l) => (l.bookingId ? [l.bookingId] : []))),
@@ -96,16 +193,65 @@ export default function PosApp() {
   }
 
   const subtotal = ticket.lines.reduce((s, l) => s + l.price, 0);
-  const discount = discountAmount(DISCOUNTS.find((x) => x.id === ticket.discountId), subtotal);
+  const discount = discountAmount(activeDiscounts.find((x) => x.id === ticket.discountId), subtotal);
   const total = subtotal - discount;
   const vat = vatOf(total);
-  const missingTherapist = ticket.lines.some((l) => !l.therapistId);
+  const missingTherapist = ticket.lines.some((l) => !l.isProduct && !l.therapistId);
 
-  const addItem = (itemId: BookableId, extra: Partial<TicketLine> = {}) =>
+  const resolveItemDisplay = (itemId: string) => {
+    const storeItem = catalogById.get(itemId);
+    if (storeItem) {
+      return {
+        name: storeItem.name[lang],
+        namePair: storeItem.name,
+        priceHalalas: toHalalas(storeItem.priceSar),
+        needs: storeItem.needs,
+        isProduct: storeItem.isProduct,
+        productId: storeItem.productId,
+      };
+    }
+    if ((BOOKABLE_IDS as readonly string[]).includes(itemId)) {
+      const info = bookableInfo(data, itemId as BookableId);
+      const arInfo = bookableInfo(getSalonData('ar'), itemId as BookableId);
+      const enInfo = bookableInfo(getSalonData('en'), itemId as BookableId);
+      return {
+        name: info.name,
+        namePair: { ar: arInfo.name, en: enInfo.name },
+        priceHalalas: toHalalas(info.price),
+        needs: info.needs,
+        isProduct: false,
+        productId: undefined,
+      };
+    }
+    return {
+      name: itemId,
+      namePair: { ar: itemId, en: itemId },
+      priceHalalas: 0,
+      needs: [] as ServiceKind[],
+      isProduct: false,
+      productId: undefined,
+    };
+  };
+
+  const addItem = (itemId: string, extra: Partial<TicketLine> = {}) => {
+    const resolved = resolveItemDisplay(itemId);
     setTicket((tk) => ({
       ...tk,
-      lines: [...tk.lines, { uid: `ln-${++lineSeq}`, itemId, therapistId: null, price: toHalalas(bookableInfo(data, itemId).price), ...extra }],
+      lines: [
+        ...tk.lines,
+        {
+          uid: `ln-${++lineSeq}`,
+          itemId,
+          itemName: resolved.namePair,
+          isProduct: resolved.isProduct,
+          productId: resolved.productId,
+          therapistId: null,
+          price: resolved.priceHalalas,
+          ...extra,
+        },
+      ],
     }));
+  };
 
   const loadBooking = (b: Booking) => {
     setTicket((tk) => ({ ...tk, client: tk.client || b.client }));
@@ -113,10 +259,12 @@ export default function PosApp() {
   };
 
   const completeSale = (payments: Payment[], change: number) => {
+    const seqToUse = Math.max(receiptSeq, nextReceiptSeq);
     const sale: CompletedSale = {
-      receiptNo: receiptNo(receiptSeq),
+      receiptNo: receiptNo(seqToUse),
       at: new Date(),
       cashierId: cashier.id,
+      cashierName: cashier.name,
       client: ticket.client,
       lines: ticket.lines,
       subtotal,
@@ -127,7 +275,30 @@ export default function PosApp() {
       change,
     };
     setSales((s) => [...s, sale]);
-    setReceiptSeq((n) => n + 1);
+    setReceiptSeq(seqToUse + 1);
+    const arData = getSalonData('ar');
+    const enData = getSalonData('en');
+    const itemNames: Record<string, { ar: string; en: string }> = {};
+    for (const id of BOOKABLE_IDS) {
+      itemNames[id] = {
+        ar: bookableInfo(arData, id).name,
+        en: bookableInfo(enData, id).name,
+      };
+    }
+    for (const item of catalogItems) {
+      itemNames[item.id] = item.name;
+    }
+    recordCompletedPosSale(sale, itemNames);
+    // Decrement inventory stock for any retail products sold
+    ticket.lines.forEach((l) => {
+      if (l.productId) adjustProductStock(l.productId, -1);
+    });
+    // Redeem package sessions if paid via package card
+    payments.forEach((pay) => {
+      if (pay.kind === 'package' && pay.packageSessionId) {
+        redeemPackageSession(pay.packageSessionId);
+      }
+    });
     // Settle the underlying appointments in the shared store → they drop off the queue and
     // show as paid on the calendar.
     ticket.lines.forEach((l) => l.bookingId && patchBooking(l.bookingId, { status: 'completed', paid: true }));
@@ -136,12 +307,13 @@ export default function PosApp() {
     setReceipt(sale);
   };
 
-  const categories: { key: MixCategory | 'all'; label: string }[] = [
+  const categories: { key: PosCategory | 'all'; label: string }[] = [
     { key: 'all', label: p.catalog.all },
-    ...data.SERVICES_CATEGORIES.map((c) => ({ key: c.id as MixCategory, label: c.name })),
+    ...data.SERVICES_CATEGORIES.map((c) => ({ key: c.id as PosCategory, label: c.name })),
     { key: 'package', label: p.catalog.packages },
+    { key: 'product', label: p.catalog.products },
   ];
-  const items = BOOKABLE_IDS.filter((id) => category === 'all' || bookableInfo(data, id).category === category);
+  const visibleCatalogItems = catalogItems.filter((item) => category === 'all' || item.category === category);
   const queueLabel: Record<QueueKind, { text: string; cls: string }> = {
     awaiting: { text: p.queue.awaiting, cls: 'bg-aura-warning-bg text-aura-warning' },
     inTreatment: { text: p.queue.inTreatment, cls: 'bg-aura-accent text-white' },
@@ -214,7 +386,7 @@ export default function PosApp() {
             <ul className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1">
               {queue.map(({ b, kind }) => {
                 const info = bookableInfo(data, b.itemId);
-                const therapist = THERAPISTS.find((x) => x.id === b.therapistId);
+                const therapist = activeTherapists.find((x) => x.id === b.therapistId);
                 return (
                   <li key={b.id} className="shrink-0 w-60 lg:w-auto">
                     <button
@@ -261,23 +433,26 @@ export default function PosApp() {
             ))}
           </div>
           <div className="mt-4 grid grid-cols-2 xl:grid-cols-3 gap-3">
-            {items.map((id) => {
-              const info = bookableInfo(data, id);
-              const Icon = CATEGORY_ICON[info.category];
+            {visibleCatalogItems.map((item) => {
+              const Icon = CATEGORY_ICON[item.category];
               return (
                 <button
-                  key={id}
+                  key={item.id}
                   type="button"
-                  onClick={() => addItem(id)}
+                  onClick={() => addItem(item.id)}
                   className="group relative flex flex-col items-start text-start min-h-32 rounded-3xl bg-aura-surface border border-aura-border p-4 hover:border-aura-accent/50 hover:shadow-premium-hover active:scale-[0.98] transition"
                 >
                   <span className="grid place-items-center w-10 h-10 rounded-full bg-aura-primary text-aura-accent">
                     <Icon className="w-5 h-5" />
                   </span>
-                  <span className="mt-3 text-sm font-semibold leading-snug">{info.name}</span>
+                  <span className="mt-3 text-sm font-semibold leading-snug">{item.name[lang]}</span>
                   <span className="mt-auto pt-2 flex w-full items-end justify-between gap-2">
-                    <span className="text-xs text-aura-muted">{info.duration} {p.catalog.min}</span>
-                    <span className="text-base font-semibold tabular-nums">{money(toHalalas(info.price))}</span>
+                    <span className="text-xs text-aura-muted">
+                      {item.isProduct
+                        ? `${item.stockQty ?? 0} ${p.catalog.inStock}`
+                        : `${item.duration ?? 60} ${p.catalog.min}`}
+                    </span>
+                    <span className="text-base font-semibold tabular-nums">{money(toHalalas(item.priceSar))}</span>
                   </span>
                   <Plus className="absolute top-4 end-4 w-5 h-5 text-aura-muted group-hover:text-aura-accent" />
                 </button>
@@ -312,12 +487,12 @@ export default function PosApp() {
             ) : (
               <ul className="space-y-3">
                 {ticket.lines.map((l) => {
-                  const info = bookableInfo(data, l.itemId);
-                  const capable = THERAPISTS.filter((x) => info.needs.every((k) => x.skills.includes(k)));
+                  const resolved = resolveItemDisplay(l.itemId);
+                  const capable = activeTherapists.filter((x) => resolved.needs.every((k) => x.skills.includes(k)));
                   return (
                     <li key={l.uid} className="rounded-2xl border border-aura-border p-3">
                       <div className="flex items-start gap-2">
-                        <span className="flex-1 text-sm font-medium">{info.name}</span>
+                        <span className="flex-1 text-sm font-medium">{l.itemName ? l.itemName[lang] : resolved.name}</span>
                         <span className="text-sm font-semibold tabular-nums">{money(l.price)}</span>
                         <button
                           type="button"
@@ -328,22 +503,24 @@ export default function PosApp() {
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                      <select
-                        aria-label={p.ticket.therapist}
-                        value={l.therapistId ?? ''}
-                        onChange={(e) =>
-                          setTicket((tk) => ({
-                            ...tk,
-                            lines: tk.lines.map((x) => (x.uid === l.uid ? { ...x, therapistId: e.target.value || null } : x)),
-                          }))
-                        }
-                        className={`mt-2 w-full h-10 rounded-xl border px-3 text-sm bg-aura-bg ${l.therapistId ? 'border-aura-border' : 'border-aura-warning/50 text-aura-warning'}`}
-                      >
-                        <option value="">{p.ticket.noTherapist}</option>
-                        {capable.map((x) => (
-                          <option key={x.id} value={x.id}>{x.name[lang]}</option>
-                        ))}
-                      </select>
+                      {!l.isProduct && (
+                        <select
+                          aria-label={p.ticket.therapist}
+                          value={l.therapistId ?? ''}
+                          onChange={(e) =>
+                            setTicket((tk) => ({
+                              ...tk,
+                              lines: tk.lines.map((x) => (x.uid === l.uid ? { ...x, therapistId: e.target.value || null } : x)),
+                            }))
+                          }
+                          className={`mt-2 w-full h-10 rounded-xl border px-3 text-sm bg-aura-bg ${l.therapistId ? 'border-aura-border' : 'border-aura-warning/50 text-aura-warning'}`}
+                        >
+                          <option value="">{p.ticket.noTherapist}</option>
+                          {capable.map((x) => (
+                            <option key={x.id} value={x.id}>{x.name[lang]}</option>
+                          ))}
+                        </select>
+                      )}
                     </li>
                   );
                 })}
@@ -359,7 +536,7 @@ export default function PosApp() {
               className="w-full h-11 rounded-2xl border border-aura-border bg-aura-bg px-4 text-sm"
             >
               <option value="">{p.ticket.noDiscount}</option>
-              {DISCOUNTS.map((x) => (
+              {activeDiscounts.map((x) => (
                 <option key={x.id} value={x.id}>{x.name[lang]}</option>
               ))}
             </select>
@@ -402,6 +579,7 @@ export default function PosApp() {
       {closingShift && (
         <ShiftDialog
           sales={sales}
+          cashierName={cashier.name[lang]}
           onCancel={() => setClosingShift(false)}
           onClosed={() => {
             setSales([]);

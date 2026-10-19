@@ -3,19 +3,24 @@
 import { useState } from 'react';
 import { CircleCheck } from 'lucide-react';
 import { OPENING_FLOAT, PAYMENT_KINDS, fmtMoney, toHalalas, type CompletedSale } from '@/data/posData';
+import { usePhase1Store } from '@/data/phase1Store';
 import Modal from './Modal';
 import { METHOD_ICON } from './PayDialog';
 import { usePos } from './usePos';
 
 /** Z-report: takings by method and a blind cash count against the expected drawer. */
 export default function ShiftDialog({
-  sales, onCancel, onClosed,
+  sales, cashierName, onCancel, onClosed,
 }: {
   sales: CompletedSale[];
+  cashierName?: string;
   onCancel: () => void;
   onClosed: () => void;
 }) {
   const { p, money } = usePos();
+  const { shifts, closeActiveShift } = usePhase1Store();
+  const activeShift = shifts.find((s) => s.status === 'open');
+  const openingFloatHalalas = activeShift ? activeShift.openingFloatHalalas : OPENING_FLOAT;
   const [counted, setCounted] = useState('');
   const [closed, setClosed] = useState(false);
 
@@ -28,7 +33,7 @@ export default function ShiftDialog({
       sales.reduce((s, x) => s + x.payments.filter((y) => y.kind === k).reduce((a, y) => a + y.amount, 0), 0) -
       (k === 'cash' ? change : 0),
   }));
-  const expectedCash = OPENING_FLOAT + byMethod.find((m) => m.kind === 'cash')!.amount;
+  const expectedCash = openingFloatHalalas + byMethod.find((m) => m.kind === 'cash')!.amount;
   const variance = counted === '' ? null : toHalalas(Number(counted) || 0) - expectedCash;
 
   if (closed) {
@@ -74,7 +79,7 @@ export default function ShiftDialog({
 
         <dl className="grid grid-cols-2 gap-y-2 text-sm">
           <dt className="text-aura-muted">{p.shift.openingFloat}</dt>
-          <dd className="text-end tabular-nums">{money(OPENING_FLOAT)}</dd>
+          <dd className="text-end tabular-nums">{money(openingFloatHalalas)}</dd>
           <dt className="font-medium">{p.shift.expectedCash}</dt>
           <dd className="text-end font-semibold tabular-nums">{money(expectedCash)}</dd>
         </dl>
@@ -104,7 +109,9 @@ export default function ShiftDialog({
           type="button"
           disabled={counted === ''}
           onClick={() => {
-            // Print while the Z-report is still on screen; print() blocks until the dialog closes
+            if (activeShift) {
+              closeActiveShift(activeShift.id, cashierName || activeShift.openedBy, toHalalas(Number(counted) || 0));
+            }
             window.print();
             setClosed(true);
           }}

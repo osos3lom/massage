@@ -1,19 +1,23 @@
 import type { Lang } from '@/i18n/config';
 import type { BookableId } from '@/data/dashboardData';
+import {
+  SEED_COMPANY_AND_BRANCH,
+  SEED_PROMOTIONS,
+  SEED_STAFF,
+} from './seedData';
 
 /*
- * Mock POS data. Mirrors plan/schema/schema.ts: discounts, payment_methods (payment_kind),
- * shifts, sales (receipt_no = BRANCH-TERMINAL-SEQ) and sale_items (tax_rate 15, therapist_id).
+ * POS constants & initial state derived from the unified `src/data/seedData.ts`.
  * Money is kept in halalas (integer) so VAT and discounts never hit float rounding.
  */
 
 type L = Record<Lang, string>;
 
-export const VAT_RATE = 15;
-export const BRANCH_CODE = 'JED01';
-export const TERMINAL_ID = 'T1';
-export const VAT_NUMBER = '300000000000003';
-export const OPENING_FLOAT = 500_00;
+export const VAT_RATE = SEED_COMPANY_AND_BRANCH.vatRatePercent;
+export const BRANCH_CODE = SEED_COMPANY_AND_BRANCH.branchCode;
+export const TERMINAL_ID = SEED_COMPANY_AND_BRANCH.terminalId;
+export const VAT_NUMBER = SEED_COMPANY_AND_BRANCH.vatNumber;
+export const OPENING_FLOAT = Math.round(SEED_COMPANY_AND_BRANCH.defaultOpeningFloatSar * 100);
 
 // Menu prices are shown to consumers VAT-inclusive (KSA rule), so VAT is extracted, not added
 export const vatOf = (inclusive: number) => Math.round((inclusive * VAT_RATE) / (100 + VAT_RATE));
@@ -22,8 +26,8 @@ export const toHalalas = (sar: number) => Math.round(sar * 100);
 
 export const fmtMoney = (halalas: number) => (halalas / 100).toFixed(2);
 
-export type PaymentKind = 'cash' | 'card' | 'wallet' | 'transfer';
-export const PAYMENT_KINDS: PaymentKind[] = ['cash', 'card', 'wallet', 'transfer'];
+export type PaymentKind = 'cash' | 'card' | 'wallet' | 'transfer' | 'package';
+export const PAYMENT_KINDS: PaymentKind[] = ['cash', 'card', 'wallet', 'transfer', 'package'];
 
 export interface Discount {
   id: string;
@@ -32,11 +36,12 @@ export interface Discount {
   value: number; // percent, or halalas
 }
 
-export const DISCOUNTS: Discount[] = [
-  { id: 'dc-loyal', name: { en: 'Loyalty 10%', ar: 'ولاء 10%' }, kind: 'percent', value: 10 },
-  { id: 'dc-weekday', name: { en: 'Weekday morning 15%', ar: 'صباح أيام الأسبوع 15%' }, kind: 'percent', value: 15 },
-  { id: 'dc-50', name: { en: '50 SAR off', ar: 'خصم 50 ريال' }, kind: 'amount', value: 50_00 },
-];
+export const DISCOUNTS: Discount[] = SEED_PROMOTIONS.filter((p) => p.isActive).map((p) => ({
+  id: p.id,
+  name: { en: p.nameEn, ar: p.nameAr },
+  kind: p.kind,
+  value: p.value,
+}));
 
 export const discountAmount = (d: Discount | undefined, subtotal: number) => {
   if (!d) return 0;
@@ -47,17 +52,31 @@ export interface Cashier {
   id: string;
   name: L;
   initials: string;
+  pinCode?: string;
+  role?: 'admin' | 'cashier';
 }
 
-export const CASHIERS: Cashier[] = [
-  { id: 'u-cash-1', name: { en: 'Huda Salem', ar: 'هدى سالم' }, initials: 'HS' },
-  { id: 'u-cash-2', name: { en: 'Rawan Ali', ar: 'روان علي' }, initials: 'RA' },
-  { id: 'u-rec-1', name: { en: 'Mona Fares', ar: 'منى فارس' }, initials: 'MF' },
-];
+export const CASHIERS: Cashier[] = SEED_STAFF.filter((s) => s.isActive).map((s) => {
+  const parts = s.fullNameEn.trim().split(/\s+/);
+  const initials =
+    parts.length >= 2
+      ? `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
+      : s.fullNameEn.slice(0, 2).toUpperCase() || 'ST';
+  return {
+    id: s.id,
+    name: { en: s.fullNameEn, ar: s.fullNameAr },
+    initials,
+    pinCode: s.pinCode,
+    role: s.role,
+  };
+});
 
 export interface TicketLine {
   uid: string;
-  itemId: BookableId;
+  itemId: BookableId | string;
+  itemName?: L;
+  productId?: string;
+  isProduct?: boolean;
   therapistId: string | null;
   price: number; // halalas, VAT-inclusive
   bookingId?: string;
@@ -66,12 +85,14 @@ export interface TicketLine {
 export interface Payment {
   kind: PaymentKind;
   amount: number; // halalas
+  packageSessionId?: string;
 }
 
 export interface CompletedSale {
   receiptNo: string;
   at: Date;
   cashierId: string;
+  cashierName?: L;
   client: string;
   lines: TicketLine[];
   subtotal: number;

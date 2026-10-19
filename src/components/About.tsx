@@ -3,12 +3,13 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Leaf, Award, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '@/i18n/LanguageProvider';
+import { SITE_IMAGES } from '@/data/siteImages';
 
 const stats = [
-  { id: 1, number: '12+', label: 'years', icon: Award },
-  { id: 2, number: '15K+', label: 'clients', icon: Sparkles },
-  { id: 3, number: '20+', label: 'therapists', icon: ShieldCheck },
-  { id: 4, number: '100%', label: 'organic', icon: Leaf },
+  { id: 1, number: '4', label: 'services', icon: Sparkles },
+  { id: 2, number: '4', label: 'packages', icon: Award },
+  { id: 3, number: '60', label: 'minutes', icon: Leaf },
+  { id: 4, number: '180', label: 'startPrice', icon: ShieldCheck },
 ] as const;
 
 export default function About() {
@@ -29,7 +30,7 @@ export default function About() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
     },
   };
 
@@ -49,14 +50,14 @@ export default function About() {
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
             className="lg:col-span-6 grid grid-cols-12 gap-4 relative"
           >
             {/* Primary/Main interior image */}
             <div className="col-span-8 aspect-[4/5] rounded-[20px] overflow-hidden shadow-premium border-4 border-aura-bg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=800&q=80"
+                src={SITE_IMAGES.about.main}
                 alt={t.about.img1Alt}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 brightness-[1.03] saturate-[1.04] contrast-[1.02]"
               />
@@ -66,7 +67,7 @@ export default function About() {
             <div className="col-span-7 absolute end-0 bottom-[-2rem] aspect-square rounded-[20px] overflow-hidden shadow-premium border-8 border-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=800&q=80"
+                src={SITE_IMAGES.about.detail}
                 alt={t.about.img2Alt}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 brightness-[1.03] saturate-[1.04] contrast-[1.02]"
               />
@@ -78,7 +79,7 @@ export default function About() {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as any }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
             className="lg:col-span-6 flex flex-col space-y-6 lg:ps-6"
           >
             <span className="text-xs font-semibold tracking-[0.2em] text-aura-accent uppercase">{t.about.eyebrow}</span>

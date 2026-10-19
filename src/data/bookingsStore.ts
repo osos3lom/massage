@@ -20,7 +20,7 @@ interface StoreState {
   patches: Record<string, Partial<Booking>>; // bookingId -> status / payment edits
 }
 
-const KEY = 'aura-bookings-v1';
+const KEY = 'aura-bookings-v2';
 const EMPTY: StoreState = { added: {}, patches: {} };
 
 const read = (): StoreState => {

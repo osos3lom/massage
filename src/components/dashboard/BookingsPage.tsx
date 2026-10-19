@@ -7,6 +7,7 @@ import {
   startOfDay, therapistMinutes, toDateKey, type Booking, type MixCategory,
 } from '@/data/dashboardData';
 import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
+import { usePhase34Store } from '@/data/phase34Store';
 import { useDashboard, useNow } from './useDashboard';
 import { fmtDate, fmtMinutes, fmtRange } from './format';
 import { LEGEND_ORDER, STATUS_STYLE } from './status';
@@ -38,9 +39,21 @@ export default function BookingsPage() {
   const [date, setDate] = useState<Date | null>(null);
   const [filter, setFilter] = useState<MixCategory | 'all'>('all');
   const { added, patches, addBooking, patchBooking } = useBookingsStore();
+  const { therapists: storeTherapists } = usePhase34Store();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const nowRef = useRef<HTMLDivElement>(null);
+
+  const activeTherapists = useMemo(() => {
+    const active = storeTherapists.filter((th) => th.isActive);
+    if (active.length === 0) return THERAPISTS;
+    return active.map((th) => ({
+      id: th.id,
+      name: { en: th.nameEn, ar: th.nameAr },
+      initials: th.initials,
+      skills: th.skills,
+    }));
+  }, [storeTherapists]);
 
   useEffect(() => {
     if (now && !date) {
@@ -88,7 +101,7 @@ export default function BookingsPage() {
   const matches = (b: Booking) => filter === 'all' || bookableInfo(data, b.itemId).category === filter;
   const lanes = [
     { id: null as string | null, name: d.bookings.unassignedLane, initials: '?', muted: true },
-    ...THERAPISTS.map((t) => ({ id: t.id as string | null, name: t.name[lang], initials: t.initials, muted: false })),
+    ...activeTherapists.map((t) => ({ id: t.id as string | null, name: t.name[lang], initials: t.initials, muted: false })),
   ];
 
   const filterOptions: { key: MixCategory | 'all'; label: string }[] = [
@@ -268,7 +281,7 @@ export default function BookingsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {THERAPISTS.map((t) => (
+                  {activeTherapists.map((t) => (
                     <tr key={t.id} className="border-t border-aura-border/70">
                       <td className="py-2">
                         <span className="flex items-center gap-3 pe-2">

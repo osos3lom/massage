@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import { useLanguage } from '@/i18n/LanguageProvider';
@@ -12,24 +12,24 @@ export default function Testimonials() {
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startAutoplay = () => {
+  const stopAutoplay = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  }, []);
+
+  const startAutoplay = useCallback(() => {
     stopAutoplay();
     timerRef.current = setInterval(() => {
       setDirection(1);
       setActiveIndex((prev) => (prev === TESTIMONIALS_DATA.length - 1 ? 0 : prev + 1));
     }, 6000);
-  };
-
-  const stopAutoplay = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-  };
+  }, [TESTIMONIALS_DATA.length, stopAutoplay]);
 
   useEffect(() => {
     startAutoplay();
     return () => stopAutoplay();
-  }, [activeIndex]); // Reset timer on slide change to avoid quick double jumps
+  }, [activeIndex, startAutoplay, stopAutoplay]); // Reset timer on slide change to avoid quick double jumps
 
   const handlePrev = () => {
     setDirection(-1);
@@ -55,12 +55,12 @@ export default function Testimonials() {
     center: {
       x: 0,
       opacity: 1,
-      transition: { duration: 0.5, ease: 'easeInOut' as any },
+      transition: { duration: 0.5, ease: 'easeInOut' as const },
     },
     exit: (dir: number) => ({
       x: dir > 0 ? -100 : 100,
       opacity: 0,
-      transition: { duration: 0.5, ease: 'easeInOut' as any },
+      transition: { duration: 0.5, ease: 'easeInOut' as const },
     }),
   };
 
@@ -101,15 +101,10 @@ export default function Testimonials() {
               key={activeIndex}
               className="flex flex-col md:flex-row gap-8 items-center"
             >
-              {/* Photo & Rating column */}
+              {/* Initial & Rating column */}
               <div className="flex flex-col items-center space-y-4 md:border-e md:border-aura-border md:pe-8 flex-shrink-0">
-                <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-aura-accent">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={TESTIMONIALS_DATA[activeIndex].photo}
-                    alt={TESTIMONIALS_DATA[activeIndex].name}
-                    className="w-full h-full object-cover brightness-[1.03] saturate-[1.04] contrast-[1.02]"
-                  />
+                <div className="w-20 h-20 rounded-full border-2 border-aura-accent bg-aura-primary/50 text-aura-accent flex items-center justify-center font-serif text-2xl">
+                  {TESTIMONIALS_DATA[activeIndex].name.charAt(0)}
                 </div>
                 
                 {/* Review Star Rating */}
