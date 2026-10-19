@@ -1,4 +1,4 @@
--- Aura Spa — Row-Level Security (Supabase)
+-- واحة الإسترخاء للمساج — Row-Level Security (Supabase)
 -- Run AFTER the Drizzle migration has created the tables.
 -- Model: every staff row lives in public.users and is linked to auth.users via
 -- auth_user_id. A user belongs to one branch (NULL branch = org-wide/owner).

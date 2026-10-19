@@ -1,4 +1,4 @@
-# Aura Spa — Plan & Phase 0 Schema
+# واحة الإسترخاء للمساج — Plan & Phase 0 Schema
 
 This folder holds the architecture plan and the Phase 0 database foundation.
 

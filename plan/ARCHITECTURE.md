@@ -1,6 +1,6 @@
-# Aura Spa — POS & Management System: Architecture Plan
+# واحة الإسترخاء للمساج — POS & Management System: Architecture Plan
 
-> Full-stack plan to grow the current `aura-spa-salon` marketing site into an
+> Full-stack plan to grow the current `واحة الإسترخاء للمساج` marketing site into an
 > **offline-capable in-store POS**, a **Supabase cloud layer that syncs**, and an
 > **easy end-to-end dashboard**. Borrows the mature sales/accounting schema from the
 > APEX Store system; skips its legacy stack and its security flaws.
@@ -9,7 +9,7 @@
 
 ## 1. Current state
 
-- `aura-spa-salon` is a **bilingual (Arabic-RTL default / English)** Next.js 16 + React 19 + Tailwind 4 **static marketing site**.
+- `واحة الإسترخاء للمساج` is a **bilingual (Arabic-RTL default / English)** Next.js 16 + React 19 + Tailwind 4 **static marketing site**.
 - Clean domain model already in `src/data/salonData.ts`: services (`massage` / `moroccan-bath` / `pedicure`), packages, specialists, gallery, FAQ. Prices in **SAR**.
 - **No backend, database, Express, or Supabase yet.** This is a build-up, not a refactor.
 - Context: Saudi/GCC → **ZATCA e-invoicing applies**.

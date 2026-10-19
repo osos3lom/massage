@@ -1,4 +1,4 @@
-# Aura Spa — Dashboard IA & Sidebar Plan
+# واحة الإسترخاء للمساج — Dashboard IA & Sidebar Plan
 
 > Companion to `ARCHITECTURE.md` §7 (role-aware dashboard) and §8 (roadmap).
 > Defines which pages a massage center's back office needs, how the sidebar groups

@@ -1,14 +1,14 @@
-# 🌸 Aura Spa & Salon
+# 🌸 واحة الإسترخاء للمساج
 
 A premium full-stack-inspired spa and wellness website built for luxury spas, beauty salons, wellness centers, massage studios, and skincare clinics. Designed with a calming aesthetic, elegant UI, smooth animations, and responsive layouts to deliver a relaxing digital experience across all devices.
 
-🔗 **Live Demo:** https://aura-spa-salon.vercel.app
+🔗 **Live Demo:** https://osos3lom.github.io/massage/
 
 ---
 
 # 📖 About the Project
 
-Aura Spa & Salon was designed to provide premium wellness businesses with an elegant online presence that reflects relaxation, luxury, and professionalism.
+واحة الإسترخاء للمساج was designed to provide premium wellness businesses with an elegant online presence that reflects relaxation, luxury, and professionalism.
 
 Visitors can explore spa treatments, wellness packages, beauty specialists, gallery, FAQs, and contact information while enjoying smooth animations and a calming user experience.
 
@@ -136,7 +136,7 @@ This project was built to strengthen my frontend development skills using modern
 # 📂 Project Structure
 
 ```text
-aura-spa-salon
+massage
 │
 ├── public
 │   ├── images
@@ -163,13 +163,13 @@ aura-spa-salon
 ## Clone the repository
 
 ```bash
-git clone https://github.com/Pulipati-Rahul/aura-spa-salon.git
+git clone https://github.com/osos3lom/massage.git
 ```
 
 ## Navigate into the project
 
 ```bash
-cd aura-spa-salon
+cd massage
 ```
 
 ## Install dependencies
@@ -196,7 +196,9 @@ http://localhost:3000
 
 # 🌍 Live Deployment
 
-https://aura-spa-salon.vercel.app
+https://osos3lom.github.io/massage/
+
+Deployed automatically to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
 
 ---
 

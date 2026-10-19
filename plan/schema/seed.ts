@@ -1,6 +1,6 @@
 /**
  * Phase 0 seed — mirrors the existing marketing data in src/data/salonData.ts
- * so the POS/dashboard starts with the real Aura Spa services & packages.
+ * so the POS/dashboard starts with the real واحة الإسترخاء للمساج services & packages.
  *
  * Run after migration, e.g.:
  *   tsx plan/schema/seed.ts
@@ -13,8 +13,8 @@ import { randomUUID } from "node:crypto";
 
 export const seedCompany = {
   id: randomUUID(),
-  nameEn: "Aura Spa & Salon",
-  nameAr: "أورا سبا",
+  nameEn: "Relaxation Oasis",
+  nameAr: "واحة الإسترخاء للمساج",
   currency: "SAR",
   vatNumber: null, // fill from client's ZATCA registration
 };

@@ -1,5 +1,5 @@
 /**
- * Aura Spa — Phase 0 database schema (Drizzle ORM, Postgres / Supabase)
+ * واحة الإسترخاء للمساج — Phase 0 database schema (Drizzle ORM, Postgres / Supabase)
  * ---------------------------------------------------------------------
  * Design rules (offline-first):
  *  - Primary keys are UUIDs. Generate them ON THE DEVICE (app side) so two

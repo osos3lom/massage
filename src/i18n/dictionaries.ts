@@ -2,15 +2,15 @@ import type { Lang } from './config';
 
 const en = {
   brand: {
-    name: 'Relaxation Oasis Massage',
+    name: 'Relaxation Oasis',
     logoMain: 'Relaxation Oasis',
     logoSub: 'Massage',
   },
   meta: {
-    title: 'Relaxation Oasis Massage | Relax. Rejuvenate. Renew.',
+    title: 'Relaxation Oasis | Relax. Rejuvenate. Renew.',
     description:
-      'A premium luxury wellness sanctuary. Relaxation Oasis Massage offers world-class massage therapy, facial rejuvenation, professional hair styling, nail care, and bespoke beauty treatments in an organic, calming environment.',
-    ogTitle: 'Relaxation Oasis Massage | Luxury Wellness & Beauty Sanctuary',
+      'A premium luxury wellness sanctuary. Relaxation Oasis offers world-class massage therapy, facial rejuvenation, professional hair styling, nail care, and bespoke beauty treatments in an organic, calming environment.',
+    ogTitle: 'Relaxation Oasis | Luxury Wellness & Beauty Sanctuary',
     ogDescription:
       'Relax. Rejuvenate. Renew. Experience premium organic treatments, massage therapies, and hair styling in an airy, soothing atmosphere.',
     locale: 'en_US',
@@ -52,7 +52,7 @@ const en = {
   about: {
     eyebrow: 'Our Story & Philosophy',
     title: 'An Oasis of Calming Rest & Organic Skincare',
-    p1: 'Founded in 2014, Relaxation Oasis Massage was born from a simple yet profound vision: to create a premium, chemical-free sanctuary where luxury meets natural wellness. We believe that true beauty and restoration come from nurturing both the body and the spirit.',
+    p1: 'Founded in 2014, Relaxation Oasis was born from a simple yet profound vision: to create a premium, chemical-free sanctuary where luxury meets natural wellness. We believe that true beauty and restoration come from nurturing both the body and the spirit.',
     p2: 'We exclusively use hand-harvested botanical extracts, pure therapeutic-grade essential oils, and non-toxic vegan cosmetics. Every touch, scent, and sound is intentionally curated by our master practitioners to guide you to a state of absolute serenity.',
     quote:
       'Our mission is to help you disconnect from the frantic pace of the world, allowing your inner vitality to blossom through holistic organic treatments.',
@@ -172,7 +172,7 @@ const en = {
     confirm: 'Confirm Reservation',
   },
   footer: {
-    bio: 'Relaxation Oasis Massage is a premium, organic wellness sanctuary. We deliver bespoke massages, facial rejuvenation, precision styling, and skin therapies in an airy, relaxing, and organic environment.',
+    bio: 'Relaxation Oasis is a premium, organic wellness sanctuary. We deliver bespoke massages, facial rejuvenation, precision styling, and skin therapies in an airy, relaxing, and organic environment.',
     quickLinks: 'Quick Links',
     links: {
       about: 'About Sanctuary',
