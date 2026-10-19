@@ -86,7 +86,11 @@ read/write within their branch; admins everywhere. Catalog/config readable by al
 staff, writable by admin only. `sale_items`/`payments` are SELECT+INSERT only
 (ZATCA anti-tampering). Hashed PINs only — never plain text.
 
-## 5. Dashboard IA (`apps/web/src/app/dashboard`, sidebar in `nav.ts`)
+## 5. Dashboard IA (back-office — now `apps/desktop/src/renderer/src/features/`, sidebar in `nav.ts`)
+
+> Routes below are the conceptual IA. In the Electron renderer they are hash routes
+> (`router.tsx`); they were formerly Next routes under `apps/web/src/app/dashboard`
+> before the back-office moved to the desktop app (see `state.md` §3).
 
 Grouped by the four loops a center runs on: **front desk** (reception), **floor**
 (therapists), **money** (cashier/owner), **business** (owner).
