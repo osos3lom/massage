@@ -1,5 +1,5 @@
 import { Banknote, CalendarCheck, CalendarClock, CircleAlert, CircleCheck, Sparkles, type LucideIcon } from 'lucide-react';
-import type { DisplayStatus } from '@/data/dashboardData';
+import type { DisplayStatus } from '@/data/seedData';
 
 /*
  * One style per appt_status (plus "awaiting payment"). Colors are always shown with

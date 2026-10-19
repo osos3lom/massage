@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import { usePhase1Store } from '@/data/phase1Store';
+import { usePhase1Store } from '@/data/seedData';
 import { fmtNumber } from './format';
 import { useDashboard } from './useDashboard';
 

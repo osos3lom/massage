@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import {
-  DAY_END, DAY_START, THERAPISTS, addDays, bookableInfo, displayStatus, needsAttention,
-  startOfDay, therapistMinutes, toDateKey, type Booking, type MixCategory,
-} from '@/data/dashboardData';
-import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
-import { usePhase34Store } from '@/data/phase34Store';
+  DAY_END, DAY_START, THERAPISTS, addDays, bookableInfo, displayStatus, mergeBookings,
+  needsAttention, startOfDay, therapistMinutes, toDateKey, useBookingsStore, usePhase34Store,
+  type Booking, type MixCategory,
+} from '@/data/seedData';
 import { useDashboard, useNow } from './useDashboard';
 import { fmtDate, fmtMinutes, fmtRange } from './format';
 import { LEGEND_ORDER, STATUS_STYLE } from './status';

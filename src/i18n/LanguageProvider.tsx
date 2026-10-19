@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_LANG, LANG_STORAGE_KEY, getDir, isLang, type Lang } from './config';
 import { dictionaries, type Dictionary } from './dictionaries';
-import { getSalonData, type SalonData } from '@/data/salonData';
+import { getSalonData, type SalonData } from '@/data/seedData';
 
 interface LanguageContextValue {
   lang: Lang;

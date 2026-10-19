@@ -13,7 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import { usePhase34Store, type InventoryProduct } from '@/data/phase34Store';
+import { usePhase34Store, type InventoryProduct } from '@/data/seedData';
 import { fmtNumber } from './format';
 import { useDashboard } from './useDashboard';
 

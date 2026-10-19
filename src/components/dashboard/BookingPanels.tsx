@@ -5,9 +5,8 @@ import { CalendarClock, CircleCheck, CreditCard, LogIn, Phone, UserX, X } from '
 import { currencyLabel } from '@/i18n/config';
 import {
   BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, bookableInfo, displayStatus,
-  minutesToHHMM, toDateKey, type Booking, type BookableId,
-} from '@/data/dashboardData';
-import { usePhase34Store } from '@/data/phase34Store';
+  minutesToHHMM, toDateKey, usePhase34Store, type Booking, type BookableId,
+} from '@/data/seedData';
 import { useDashboard } from './useDashboard';
 import { fmtDate, fmtNumber, fmtRange } from './format';
 import { STATUS_STYLE } from './status';

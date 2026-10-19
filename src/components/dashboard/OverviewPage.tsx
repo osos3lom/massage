@@ -9,11 +9,9 @@ import {
 import { currencyLabel } from '@/i18n/config';
 import {
   THERAPISTS, DAY_END, DAY_START, PACKAGES_EXPIRING_THIS_WEEK, addDays, bookableInfo, dayStats,
-  displayStatus, therapistMinutes, toDateKey, type MixCategory,
-} from '@/data/dashboardData';
-import { mergeBookings, useBookingsStore } from '@/data/bookingsStore';
-import { usePhase1Store } from '@/data/phase1Store';
-import { usePhase34Store } from '@/data/phase34Store';
+  displayStatus, mergeBookings, therapistMinutes, toDateKey, useBookingsStore, usePhase1Store,
+  usePhase34Store, type MixCategory,
+} from '@/data/seedData';
 import { useDashboard, useNow } from './useDashboard';
 import { fmtDate, fmtNumber, fmtRange } from './format';
 import { STATUS_STYLE } from './status';

@@ -1,6 +1,6 @@
 import type { Lang } from '@/i18n/config';
 import { formatTime } from '@/i18n/config';
-import { minutesToHHMM } from '@/data/dashboardData';
+import { minutesToHHMM } from '@/data/seedData';
 
 // Gregorian calendar + Latin digits in both languages, matching the public site's prices
 export const locale = (lang: Lang) => (lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US');

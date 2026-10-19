@@ -12,9 +12,9 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import { fmtMoney, type PaymentKind } from '@/data/posData';
-import { computeShiftSummary, usePhase1Store } from '@/data/phase1Store';
-import { usePhase34Store } from '@/data/phase34Store';
+import {
+  computeShiftSummary, fmtMoney, usePhase1Store, usePhase34Store, type PaymentKind,
+} from '@/data/seedData';
 import { fmtNumber } from './format';
 import { useDashboard } from './useDashboard';
 
