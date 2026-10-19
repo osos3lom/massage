@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import {
   DAY_END, DAY_START, THERAPISTS, addDays, bookableInfo, displayStatus, mergeBookings,
-  needsAttention, startOfDay, therapistMinutes, toDateKey, useBookingsStore, usePhase34Store,
+  minutesOfDay, needsAttention, startOfDay, therapistMinutes, toDateKey, useBookingsStore, usePhase34Store,
   type Booking, type MixCategory,
 } from '@/data/seedData';
 import { useDashboard, useNow } from './useDashboard';
@@ -90,7 +90,7 @@ export default function BookingsPage() {
   }
 
   const isToday = toDateKey(date) === toDateKey(now);
-  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const nowMin = minutesOfDay(now);
   const showNow = view === 'day' && isToday && nowMin >= DAY_START && nowMin <= DAY_END;
   const visible = dayBookings.filter((b) => b.status !== 'cancelled');
   const visitCount = view === 'day' ? visible.length : weekBookings.flat().filter((b) => b.status !== 'cancelled').length;

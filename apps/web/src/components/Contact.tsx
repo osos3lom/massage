@@ -19,7 +19,7 @@ import { formatPrice, formatTime } from '@/i18n/config';
 // Value of the type dropdown that lists the packages instead of single services
 const PACKAGES = 'packages';
 
-const timeSlots = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00'];
+const ALL_TIME_SLOTS = ['15:00', '16:00', '17:30', '19:00', '20:30', '22:00', '23:30', '01:00', '02:30', '03:30'];
 
 export default function Contact() {
   const { t, data, lang } = useLanguage();
@@ -30,6 +30,9 @@ export default function Contact() {
   const [service, setService] = useState('');
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
+  // On Fridays (day 5), the salon opens at 4:00 PM (16:00) instead of 3:00 PM (15:00)
+  const isFriday = date ? new Date(`${date}T00:00`).getDay() === 5 : false;
+  const timeSlots = isFriday ? ALL_TIME_SLOTS.filter((s) => s !== '15:00') : ALL_TIME_SLOTS;
   const [clientInfo, setClientInfo] = useState({
     name: '',
     email: '',
@@ -165,12 +168,10 @@ export default function Contact() {
                 <div className="w-full space-y-1">
                   <h4 className="text-xs font-semibold tracking-wider text-aura-text uppercase">{t.contact.hours}</h4>
                   <div className="grid grid-cols-2 text-xs text-aura-muted font-light pt-1 gap-y-1">
-                    <span>{t.contact.weekdays}</span>
-                    <span className="text-end font-medium text-aura-text">{BUSINESS_INFO.hours.weekdays}</span>
-                    <span>{t.contact.saturday}</span>
-                    <span className="text-end font-medium text-aura-text">{BUSINESS_INFO.hours.saturday}</span>
-                    <span>{t.contact.sunday}</span>
-                    <span className="text-end font-medium text-aura-text">{BUSINESS_INFO.hours.sunday}</span>
+                    <span>{t.contact.satToThu}</span>
+                    <span className="text-end font-medium text-aura-text">{BUSINESS_INFO.hours.satToThu}</span>
+                    <span>{t.contact.friday}</span>
+                    <span className="text-end font-medium text-aura-text">{BUSINESS_INFO.hours.friday}</span>
                   </div>
                 </div>
               </div>

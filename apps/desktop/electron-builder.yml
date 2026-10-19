@@ -1,0 +1,47 @@
+appId: sa.relaxationoasis.pos
+productName: Relaxation Oasis POS
+copyright: Copyright © 2026 Relaxation Oasis (واحة الإسترخاء للمساج)
+
+directories:
+  buildResources: build
+  output: dist
+
+asar: true
+asarUnpack:
+  - "**/*.node"
+  - "**/*.dll"
+  - "**/node_modules/better-sqlite3/**"
+  - "**/node_modules/@powersync/**"
+  - "out/main/*.worker.mjs"
+
+# Keep Arabic and English locales (strips unused Chromium .pak files)
+electronLanguages:
+  - ar
+  - en-US
+
+files:
+  - "!**/.vscode/*"
+  - "!src/*"
+  - "!electron.vite.config.{js,ts,mjs,cjs}"
+  - "!**/*.map"
+  - "!**/*.md"
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,readme.md,test,__tests__,tests,example,examples}"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # Manual developer updates in-store: do not require paid Authenticode certificate
+  signAndEditExecutable: false
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  # CRITICAL: Never wipe local SQLite DB or ZATCA keys when upgrading or reinstalling
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  artifactName: "${productName}-Setup-${version}.${ext}"

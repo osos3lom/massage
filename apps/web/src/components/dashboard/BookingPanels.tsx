@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { CalendarClock, CircleCheck, CreditCard, LogIn, Phone, UserX, X } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
 import {
-  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, bookableInfo, displayStatus,
-  minutesToHHMM, toDateKey, usePhase34Store, type Booking, type BookableId,
+  BOOKABLE_IDS, BOOKABLES, bookableInfo, displayStatus,
+  hhmmToBusinessMinutes, toDateKey, usePhase34Store, type Booking, type BookableId,
 } from '@/data/seedData';
 import { useDashboard } from './useDashboard';
 import { fmtDate, fmtNumber, fmtRange } from './format';
@@ -152,7 +152,7 @@ export function NewBookingForm({
   const [itemId, setItemId] = useState<BookableId>('msg-60');
   const [therapistId, setTherapistId] = useState('');
   const [dateKey, setDateKey] = useState(toDateKey(date));
-  const [time, setTime] = useState('12:00');
+  const [time, setTime] = useState('16:00');
   const capable = p34Therapists.filter((t) => t.isActive && BOOKABLES[itemId].needs.every((k) => t.skills.includes(k)));
   const field = 'w-full h-11 rounded-2xl border border-aura-border bg-aura-bg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-aura-accent/30';
   const label = 'block text-xs font-medium text-aura-muted mb-1.5';
@@ -160,7 +160,6 @@ export function NewBookingForm({
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const [h, m] = time.split(':').map(Number);
     const kind = BOOKABLES[itemId].category === 'package' ? 'massage' : BOOKABLES[itemId].category;
     onCreate(dateKey, {
       id: `local-${Date.now()}`,
@@ -169,7 +168,7 @@ export function NewBookingForm({
       itemId,
       therapistId: therapistId || null,
       roomId: p34Rooms.find((r) => r.forKind === kind)?.id ?? '',
-      start: h * 60 + m,
+      start: hhmmToBusinessMinutes(time),
       duration: BOOKABLES[itemId].duration,
       status: 'booked',
       paid: false,
@@ -237,8 +236,6 @@ export function NewBookingForm({
               id="nb-time"
               type="time"
               step={900}
-              min={minutesToHHMM(DAY_START)}
-              max={minutesToHHMM(DAY_END - BOOKABLES[itemId].duration)}
               value={time}
               onChange={(e) => setTime(e.target.value)}
               className={field}

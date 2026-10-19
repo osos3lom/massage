@@ -39,14 +39,14 @@ export const SEED_COMPANY_AND_BRANCH = {
 
   // [REQUIRED for ZATCA] 15-digit VAT Registration Number (starts and ends with 3)
   // Leave '' if not VAT-registered yet.
-  vatNumber: '323000000000003',
+  vatNumber: '',
 
   // [OPTIONAL] 10-digit Commercial Registration (السجل التجاري)
-  crNumber: '1010000000',
+  crNumber: '',
 
   // [REQUIRED] ISO Currency code & VAT percentage
   currency: 'SAR',
-  vatRatePercent: 15,
+  vatRatePercent: 0,
 
   // [REQUIRED] Short branch & POS terminal codes used in receipt numbers (e.g. JED01-T1-000001)
   branchCode: 'JED01',
@@ -71,23 +71,18 @@ export const SEED_COMPANY_AND_BRANCH = {
   mapCoordinates:
     'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1252.703885982852!2d39.16198415110974!3d21.615436879324385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c3d114824c145f%3A0x2cfb0b4d96280475!2z2YXYsdmD2LIg2YjYp9it2Kkg2KfZhNin2LPYqtix2K7Yp9ih!5e1!3m2!1sen!2ssa!4v1792404036019!5m2!1sen!2ssa',
 
-  // [OPTIONAL] Public landing page display hours
-  publicDisplayHours: {
-    weekdays: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
-    saturday: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
-    sunday: { en: '03:00 PM - 5:00 AM', ar: '5:00 م - 3:00 ص' },
-  },
-
   isActive: true,
 };
 
 /**
  * 2. WORKING HOURS & SCHEDULE — [REQUIRED]
+ * Unified single source of truth for the public website, POS, and Dashboard.
  * Maps to `settings` table (`key = 'working_hours'`).
+ * Schedule: Open daily 3:00 PM (15:00) to 5:00 AM (05:00), except Friday 4:00 PM (16:00) to 5:00 AM (05:00).
  */
 export const SEED_WORKING_HOURS: {
-  dayStartHour: number; // Calendar timeline start hour (24h, e.g. 9 = 09:00)
-  dayEndHour: number; // Calendar timeline end hour (24h, e.g. 21 = 21:00)
+  dayStartHour: number; // Calendar timeline start hour (15 = 3:00 PM)
+  dayEndHour: number; // Calendar timeline end hour (29 = 24 + 5 = 5:00 AM next day)
   bufferMinutes: number; // Room sanitizing / linen reset buffer between bookings
   maxAdvanceDays: number;
   fridayPrayerPause: {
@@ -95,25 +90,33 @@ export const SEED_WORKING_HOURS: {
     start: string;
     end: string;
   };
+  publicDisplay: {
+    satToThu: { en: string; ar: string };
+    friday: { en: string; ar: string };
+  };
   days: WorkingDayConfig[];
 } = {
-  dayStartHour: 9,
-  dayEndHour: 21,
+  dayStartHour: 15,
+  dayEndHour: 29,
   bufferMinutes: 15,
   maxAdvanceDays: 30,
   fridayPrayerPause: {
-    enabled: true,
+    enabled: false,
     start: '11:45',
     end: '13:15',
   },
+  publicDisplay: {
+    satToThu: { en: '03:00 PM - 05:00 AM', ar: '03:00 م - 05:00 ص' },
+    friday: { en: '04:00 PM - 05:00 AM', ar: '04:00 م - 05:00 ص' },
+  },
   days: [
-    { key: 'saturday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'sunday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'monday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'tuesday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'wednesday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'thursday', open: '15:00', close: '5:00', enabled: true },
-    { key: 'friday', open: '16:00', close: '5:00', enabled: true },
+    { key: 'saturday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'sunday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'monday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'tuesday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'wednesday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'thursday', open: '15:00', close: '05:00', enabled: true },
+    { key: 'friday', open: '16:00', close: '05:00', enabled: true },
   ],
 };
 
@@ -123,19 +126,26 @@ export const SEED_WORKING_HOURS: {
  * `pinCode` is hashed into `users.pin_hash` when pushed to Supabase.
  */
 export const SEED_STAFF: StaffMemberConfig[] = [
-
-   
-    {
-      id: 'usr-admin-1',
-      fullNameAr: 'هدى',            // [REQUIRED] Arabic full name
-      fullNameEn: 'Huda',            // [REQUIRED] English full name
-      email: 'osama.aalam@gmail.com',        // [REQUIRED] Supabase Auth login email
-      role: 'admin',                       // [REQUIRED] 'admin' | 'cashier'
-      pinCode: '1234',                     // [REQUIRED] 4-digit POS fast-unlock PIN
-      pinHashPreview: 'bcrypt_sha256',     // Auto-computed on save
-      isActive: true,
-   },
-
+  {
+    id: 'usr-admin-1',
+    fullNameAr: 'هدى', // [REQUIRED] Arabic full name
+    fullNameEn: 'Huda', // [REQUIRED] English full name
+    email: 'osama.aalam@gmail.com', // [REQUIRED] Supabase Auth login email
+    role: 'admin', // [REQUIRED] 'admin' | 'cashier'
+    pinCode: '1234', // [REQUIRED] 4-digit POS fast-unlock PIN
+    pinHashPreview: 'bcrypt_sha256', // Auto-computed on save
+    isActive: true,
+  },
+  {
+    id: 'usr-cashier-1',
+    fullNameAr: 'كاشير', // [REQUIRED] Arabic full name
+    fullNameEn: 'casher', // [REQUIRED] English full name
+    email: 'cashier@oasis.sa', // [REQUIRED] Supabase Auth login email
+    role: 'cashier', // [REQUIRED] 'admin' | 'cashier'
+    pinCode: '1234', // [REQUIRED] 4-digit POS fast-unlock PIN
+    pinHashPreview: 'bcrypt_sha256', // Auto-computed on save
+    isActive: true,
+  },
 ];
 
 /**
@@ -154,9 +164,9 @@ export const SEED_SERVICES: CatalogService[] = [
     descriptionEn:
       'A full hour of relaxing massage to release tension, ease tired muscles, and restore your calm.',
     durationMin: 60,
-    priceSar: 250, // [REQUIRED] VAT-inclusive price in SAR
-    taxRate: 15,
-    taxable: true,
+    priceSar: 250, // [REQUIRED] Price in SAR (0% VAT - not VAT-registered)
+    taxRate: 0,
+    taxable: false,
     roomKind: 'massage',
     isActive: true,
   },
@@ -169,9 +179,9 @@ export const SEED_SERVICES: CatalogService[] = [
     descriptionAr: 'جلسة مساج مركّزة تخفف الضغوط وتجدد نشاط الجسد والذهن.',
     descriptionEn: 'A focused massage session that relieves stress and refreshes body and mind.',
     durationMin: 45,
-    priceSar: 200, // [REQUIRED] VAT-inclusive price in SAR
-    taxRate: 15,
-    taxable: true,
+    priceSar: 200, // [REQUIRED] Price in SAR (0% VAT - not VAT-registered)
+    taxRate: 0,
+    taxable: false,
     roomKind: 'massage',
     isActive: true,
   },
@@ -185,9 +195,9 @@ export const SEED_SERVICES: CatalogService[] = [
     descriptionEn:
       'A traditional Moroccan bath with steam, black soap, and a deep exfoliating scrub for soft, glowing skin.',
     durationMin: 30,
-    priceSar: 180, // [REQUIRED] VAT-inclusive price in SAR
-    taxRate: 15,
-    taxable: true,
+    priceSar: 180, // [REQUIRED] Price in SAR (0% VAT - not VAT-registered)
+    taxRate: 0,
+    taxable: false,
     roomKind: 'moroccan-bath',
     isActive: true,
   },
@@ -202,9 +212,9 @@ export const SEED_SERVICES: CatalogService[] = [
     descriptionEn:
       'A soothing foot soak, gentle exfoliation, nail shaping, and cuticle care for refreshed feet.',
     durationMin: 45,
-    priceSar: 200, // [REQUIRED] VAT-inclusive price in SAR
-    taxRate: 15,
-    taxable: true,
+    priceSar: 200, // [REQUIRED] Price in SAR (0% VAT - not VAT-registered)
+    taxRate: 0,
+    taxable: false,
     roomKind: 'pedicure',
     isActive: true,
   },
@@ -280,23 +290,48 @@ export const SEED_PACKAGES: PackageCatalogItem[] = [
  * `forKind` must be: 'massage' | 'moroccan-bath' | 'pedicure'
  */
 export const SEED_ROOMS: RoomConfig[] = [
-  /*
-   * Example Room Entry:
-   * {
-   *   id: 'rm-1',
-   *   code: 'R-101',                          // [REQUIRED if adding room] Short code
-   *   nameAr: 'غرفة المساج 1',                 // [REQUIRED] Arabic name
-   *   nameEn: 'Massage Room 1',               // [REQUIRED] English name
-   *   forKind: 'massage',                     // [REQUIRED] 'massage' | 'moroccan-bath' | 'pedicure'
-   *   floorAr: 'الدور الأول',                  // [OPTIONAL] Floor / wing in Arabic
-   *   floorEn: '1st Floor',                   // [OPTIONAL] Floor / wing in English
-   *   equipmentAr: ['سرير مساج'],              // [OPTIONAL] Equipment list (AR)
-   *   equipmentEn: ['Massage table'],         // [OPTIONAL] Equipment list (EN)
-   *   liveState: 'available',
-   *   bufferMinutes: 15,                      // [OPTIONAL] Default 15 min
-   *   isActive: true,
-   * },
-   */
+  {
+    id: 'rm-1',
+    code: 'R-101',
+    nameAr: 'غرفة المساج 1 (مع كرسي بديكير)',
+    nameEn: 'Massage Room 1 (with Pedicure Chair)',
+    forKind: 'massage',
+    floorAr: 'الدور الأرضي',
+    floorEn: 'Ground Floor',
+    equipmentAr: ['سرير مساج فاخر', 'كرسي بديكير مريح', 'خزانة مناشف'],
+    equipmentEn: ['Premium Massage Table', 'Comfort Pedicure Chair', 'Towel Warmer'],
+    liveState: 'available',
+    bufferMinutes: 15,
+    isActive: true,
+  },
+  {
+    id: 'rm-2',
+    code: 'R-102',
+    nameAr: 'غرفة المساج 2 (مع كرسي بديكير)',
+    nameEn: 'Massage Room 2 (with Pedicure Chair)',
+    forKind: 'massage',
+    floorAr: 'الدور الأرضي',
+    floorEn: 'Ground Floor',
+    equipmentAr: ['سرير مساج فاخر', 'كرسي بديكير مريح', 'خزانة مناشف'],
+    equipmentEn: ['Premium Massage Table', 'Comfort Pedicure Chair', 'Towel Warmer'],
+    liveState: 'available',
+    bufferMinutes: 15,
+    isActive: true,
+  },
+  {
+    id: 'rm-bath',
+    code: 'H-01',
+    nameAr: 'جناح الحمام المغربي',
+    nameEn: 'Moroccan Bath Suite',
+    forKind: 'moroccan-bath',
+    floorAr: 'الدور الأرضي',
+    floorEn: 'Ground Floor',
+    equipmentAr: ['مغسلة رخامية دافئة', 'مولد بخار تركي', 'دش استحمام'],
+    equipmentEn: ['Heated Marble Slab', 'Steam Unit', 'Rain Shower'],
+    liveState: 'available',
+    bufferMinutes: 15,
+    isActive: true,
+  },
 ];
 
 /**
@@ -304,40 +339,70 @@ export const SEED_ROOMS: RoomConfig[] = [
  * Maps to `commission_rules` and `therapists` tables in `plan/schema/schema.ts`.
  */
 export const SEED_COMMISSION_RULES: CommissionRuleItem[] = [
-  /*
-   * Example Commission Rule:
-   * {
-   *   id: 'cr-default',
-   *   nameAr: 'نسبة المعالجة 20%',             // [REQUIRED] Arabic title
-   *   nameEn: 'Standard Therapist 20%',       // [REQUIRED] English title
-   *   kind: 'percent',                        // [REQUIRED] 'percent' | 'amount'
-   *   value: 20,                              // [REQUIRED] 20 = 20% (or SAR if kind='amount')
-   * },
-   */
+  {
+    id: 'cr-0',
+    nameAr: 'نسبة 0%',
+    nameEn: '0% Commission',
+    kind: 'percent',
+    value: 0,
+  },
 ];
 
 export const SEED_THERAPISTS: TherapistProfile[] = [
-  /*
-   * Example Therapist Entry:
-   * {
-   *   id: 'th-1',
-   *   nameAr: 'اسم المعالجة',                  // [REQUIRED] Arabic name
-   *   nameEn: 'Therapist Name',               // [REQUIRED] English name
-   *   initials: 'TN',                         // [REQUIRED] 2-letter badge initials
-   *   phone: '0500000000',                    // [OPTIONAL] Phone number
-   *   specialtyAr: 'أخصائية مساج',            // [OPTIONAL] Specialty in Arabic
-   *   specialtyEn: 'Massage Specialist',      // [OPTIONAL] Specialty in English
-   *   skills: ['massage', 'moroccan-bath'],   // [REQUIRED] Array of: 'massage' | 'moroccan-bath' | 'pedicure'
-   *   commissionRuleId: 'cr-default',         // [OPTIONAL] Matches an id in SEED_COMMISSION_RULES
-   *   shiftStart: '10:00',                    // [OPTIONAL] Shift start HH:MM
-   *   shiftEnd: '22:00',                      // [OPTIONAL] Shift end HH:MM
-   *   daysOff: ['sunday'],                    // [OPTIONAL] Weekly days off
-   *   completedSessionsMonth: 0,
-   *   revenueMonthSar: 0,
-   *   rating: 5.0,
-   *   isActive: true,
-   * },
-   */
+  {
+    id: 'th-1',
+    nameAr: 'معالجة 1',
+    nameEn: 'Therapist 1',
+    initials: 'T1',
+    phone: '',
+    specialtyAr: 'أخصائية مساج وعناية شاملة',
+    specialtyEn: 'Massage & Wellness Specialist',
+    skills: ['massage', 'moroccan-bath', 'pedicure'],
+    commissionRuleId: 'cr-0',
+    shiftStart: '15:00',
+    shiftEnd: '05:00',
+    daysOff: [],
+    completedSessionsMonth: 0,
+    revenueMonthSar: 0,
+    rating: 5.0,
+    isActive: true,
+  },
+  {
+    id: 'th-2',
+    nameAr: 'معالجة 2',
+    nameEn: 'Therapist 2',
+    initials: 'T2',
+    phone: '',
+    specialtyAr: 'أخصائية مساج وعناية شاملة',
+    specialtyEn: 'Massage & Wellness Specialist',
+    skills: ['massage', 'moroccan-bath', 'pedicure'],
+    commissionRuleId: 'cr-0',
+    shiftStart: '15:00',
+    shiftEnd: '05:00',
+    daysOff: [],
+    completedSessionsMonth: 0,
+    revenueMonthSar: 0,
+    rating: 5.0,
+    isActive: true,
+  },
+  {
+    id: 'th-3',
+    nameAr: 'معالجة 3',
+    nameEn: 'Therapist 3',
+    initials: 'T3',
+    phone: '',
+    specialtyAr: 'أخصائية مساج وعناية شاملة',
+    specialtyEn: 'Massage & Wellness Specialist',
+    skills: ['massage', 'moroccan-bath', 'pedicure'],
+    commissionRuleId: 'cr-0',
+    shiftStart: '15:00',
+    shiftEnd: '05:00',
+    daysOff: [],
+    completedSessionsMonth: 0,
+    revenueMonthSar: 0,
+    rating: 5.0,
+    isActive: true,
+  },
 ];
 
 /**
@@ -710,9 +775,8 @@ export function getSalonData(lang: Lang) {
         lang === 'ar' ? SEED_COMPANY_AND_BRANCH.addressAr : SEED_COMPANY_AND_BRANCH.addressEn,
       mapCoordinates: SEED_COMPANY_AND_BRANCH.mapCoordinates,
       hours: {
-        weekdays: SEED_COMPANY_AND_BRANCH.publicDisplayHours.weekdays[lang],
-        saturday: SEED_COMPANY_AND_BRANCH.publicDisplayHours.saturday[lang],
-        sunday: SEED_COMPANY_AND_BRANCH.publicDisplayHours.sunday[lang],
+        satToThu: SEED_WORKING_HOURS.publicDisplay.satToThu[lang],
+        friday: SEED_WORKING_HOURS.publicDisplay.friday[lang],
       },
     },
   };
@@ -788,7 +852,7 @@ export interface Booking {
   itemId: BookableId;
   therapistId: string | null;
   roomId: string;
-  start: number; // minutes from midnight
+  start: number; // minutes from midnight (or +1440 for post-midnight hours up to 05:00 AM)
   duration: number;
   status: ApptStatus;
   paid: boolean;
@@ -807,10 +871,21 @@ export const addDays = (d: Date, n: number) => {
 
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-export const minutesOfDay = (d: Date) => d.getHours() * 60 + d.getMinutes();
+export const minutesOfDay = (d: Date) => {
+  const raw = d.getHours() * 60 + d.getMinutes();
+  return raw < DAY_START && DAY_END > 1440 && raw <= DAY_END - 1440 ? raw + 1440 : raw;
+};
 
-export const minutesToHHMM = (m: number) =>
-  `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+export const hhmmToBusinessMinutes = (hhmm: string) => {
+  const [h = 0, m = 0] = hhmm.split(':').map(Number);
+  const raw = h * 60 + m;
+  return raw < DAY_START && DAY_END > 1440 && raw <= DAY_END - 1440 ? raw + 1440 : raw;
+};
+
+export const minutesToHHMM = (m: number) => {
+  const wrapped = ((m % 1440) + 1440) % 1440;
+  return `${String(Math.floor(wrapped / 60)).padStart(2, '0')}:${String(wrapped % 60).padStart(2, '0')}`;
+};
 
 export function generateBookings(_day: Date, _now: Date, _lang: Lang): Booking[] {
   void _day;
@@ -1983,7 +2058,7 @@ export function encodeZatcaTlvPreview(params: {
   return { base64, tags };
 }
 
-const SETTINGS_STORAGE_KEY = 'aura-settings-v3';
+const SETTINGS_STORAGE_KEY = 'aura-settings-v4';
 
 const readSettingsStorage = (): SettingsState => {
   try {

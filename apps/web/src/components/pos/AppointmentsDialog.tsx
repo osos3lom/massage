@@ -4,8 +4,8 @@ import { useMemo, useRef, useState } from 'react';
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, ListChecks, LogIn, Plus, Search } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
 import {
-  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, addBooking, addDays, bookableInfo, displayStatus,
-  mergeBookings, minutesToHHMM, startOfDay, toDateKey, toHalalas, useBookingsStore, usePhase34Store,
+  BOOKABLE_IDS, BOOKABLES, addBooking, addDays, bookableInfo, displayStatus,
+  hhmmToBusinessMinutes, mergeBookings, startOfDay, toDateKey, toHalalas, useBookingsStore, usePhase34Store,
   type Booking, type BookableId,
 } from '@/data/seedData';
 import { dashboardDictionaries } from '@/i18n/dashboardDictionary';
@@ -186,7 +186,7 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
   const [itemId, setItemId] = useState<BookableId>('msg-60');
   const [therapistId, setTherapistId] = useState('');
   const [dateKey, setDateKey] = useState(toDateKey(now));
-  const [time, setTime] = useState('12:00');
+  const [time, setTime] = useState('16:00');
   const [saved, setSaved] = useState<{ booking: Booking; dateKey: string } | null>(null);
   // Which button submitted: book only, or book and drop onto the current ticket
   const intent = useRef<'save' | 'ticket'>('save');
@@ -199,7 +199,6 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
 
   const build = (form: HTMLFormElement): { booking: Booking; dateKey: string } => {
     const fd = new FormData(form);
-    const [h, m] = time.split(':').map(Number);
     const kind = BOOKABLES[itemId].category === 'package' ? 'massage' : BOOKABLES[itemId].category;
     return {
       dateKey,
@@ -210,7 +209,7 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
         itemId,
         therapistId: therapistId || null,
         roomId: p34Rooms.find((r) => r.forKind === kind)?.id ?? '',
-        start: h * 60 + m,
+        start: hhmmToBusinessMinutes(time),
         duration: BOOKABLES[itemId].duration,
         status: 'booked',
         paid: false,
@@ -312,8 +311,6 @@ function BookForm({ now, onLoad, onClose }: { now: Date; onLoad: (b: Booking) =>
             id="ap-time"
             type="time"
             step={900}
-            min={minutesToHHMM(DAY_START)}
-            max={minutesToHHMM(DAY_END - BOOKABLES[itemId].duration)}
             value={time}
             onChange={(e) => setTime(e.target.value)}
             className={field}
