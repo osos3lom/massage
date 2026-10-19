@@ -15,35 +15,36 @@ database is schema-only with **no tooling, connection, or seed**. Design in
 
 ## Phase 0 — Supabase foundation + seeding
 
-Schema and RLS are drafted; **everything needed to actually connect and seed is
-missing.** These are the prerequisites, grouped.
+The tooling and the first migration now exist; what remains is a live Supabase
+project, the connection secret, the Auth user, and actually running migrate/seed/rls.
 
-**Status so far**
-- [x] Drizzle schema drafted (`packages/db`, 21 tables, single-branch halalas).
-- [x] RLS written (`packages/db/rls-policies.sql`).
+**Done**
+- [x] Drizzle schema (`packages/db`, 21 tables, single-branch halalas).
+- [x] RLS (`packages/db/rls-policies.sql`).
+- [x] **A. DB tooling** — `postgres` driver; `drizzle.config.ts`; DB client
+  (`src/client.ts`, Node-only); scripts `db:generate` / `db:migrate` / `db:push` /
+  `db:studio` / `db:seed` / `db:rls`; **first migration generated**
+  (`migrations/0000_polite_white_queen.sql`, 11 enums + 21 tables). Typechecks.
+- [x] **C (DB side). Seed script** — `packages/db/seed.ts`: halalas via
+  `@oasis/shared`, 15% VAT-inclusive, no removed tables, run-once guard. Seeds
+  company, branch (JED01), roles, 3 categories, 4 services, 4 packages, 2 rooms, 2 therapists.
+- [x] **D. VAT decided** — **VAT-registered, 15%** (ZATCA registration number not yet
+  available → `company.vat_number` seeded null, to fill later). Schema default (15%)
+  already matched; prices are VAT-inclusive. ZATCA stays in scope (Phase 5).
+- [x] `.env.example` added (`packages/db/.env.example`).
 
-**A. DB tooling — none exists yet (`packages/db`)**
-- [ ] Add a Postgres driver (`postgres`) to `packages/db` (only `drizzle-orm` + `drizzle-kit` today).
-- [ ] Add `drizzle.config.ts` (schema path, out dir, `dialect: postgresql`, `dbCredentials` from `DATABASE_URL`).
-- [ ] Add a DB client module (`drizzle(postgres(url))`) — `index.ts` currently exports schema only.
-- [ ] Add scripts: `db:generate`, `db:migrate` (or push), `db:seed`.
-- [ ] Generate the first migration (none exist).
+**Remaining**
+- [ ] **B. Connection secret** — get the **direct Supabase Postgres `DATABASE_URL`**,
+  put it in `packages/db/.env`, then run `pnpm --filter @oasis/db db:migrate`.
+- [ ] **E. Auth + seed order** — run `db:seed` (direct connection bypasses RLS), create
+  a Supabase **Auth** admin user + matching `public.users.auth_user_id` (role=admin),
+  **then** `db:rls`. (A cashier + hashed PIN can follow.)
+- [ ] **C (app side).** The UI mock `seedData.ts` (duplicated in `apps/web` **and**
+  `apps/desktop/src/renderer`) still carries the old `SEED_COMMISSION_RULES` /
+  `SEED_PAYMENT_METHODS` / `SEED_PRODUCTS` arrays and `priceSar` with stale
+  "0% VAT / not registered" comments — clean these when the UI moves off mock data.
 
-**B. Connection secret — missing**
-- [ ] Get Supabase's **direct Postgres `DATABASE_URL`** (the postgres role bypasses RLS for seeding) and add it to env; add a `.env.example` documenting `NEXT_PUBLIC_SUPABASE_URL`, publishable key, and `DATABASE_URL`.
-
-**C. Reconcile seed data with the live schema (currently out of sync)**
-- [ ] `seedData.ts` still exports `SEED_COMMISSION_RULES`, `SEED_PAYMENT_METHODS`, `SEED_PRODUCTS` (the removed tables) — remap: commission → `therapists.commission_percent`; payment methods → enums; products → `supplies` (or drop).
-- [ ] Convert `priceSar` → `price_halalas` (×100; `@oasis/shared/money.toHalalas` exists — `seedData.ts` redundantly redefines its own).
-- [ ] Write the actual Node **seed script** (the old `plan/schema/seed.ts` was deleted; `seedData.ts` is UI config, not a DB writer). Note the seed data is now duplicated in `apps/web` and `apps/desktop/src/renderer` — pick one source.
-
-**D. Decide VAT — a business decision, blocks seeding ⚠️**
-- [ ] `seedData.ts` says **not VAT-registered** (0% VAT) but the schema defaults 15% and the blueprint assumes ZATCA Phase 2. Decide: VAT-registered (15% + ZATCA) or not (0%, ZATCA out of scope). This sets the seeded tax values and whether ZATCA is in Phase 0 at all.
-
-**E. Auth / RLS ordering (so you don't lock yourself out)**
-- [ ] Seed `roles` ('admin','cashier'); create a Supabase **Auth** admin user + matching `public.users.auth_user_id`; seed via the direct Postgres connection (bypasses RLS), **then** apply `rls-policies.sql`.
-
-**Then:** stand up the Supabase project, push the migration, run `rls-policies.sql`, run the seed.
+**Then:** `db:migrate` → `db:seed` → create Auth admin → `db:rls` against the live project.
 
 ## Phase 1 — Wire the desktop app to data
 
@@ -62,7 +63,7 @@ missing.** These are the prerequisites, grouped.
 ## Phase 4 — Reports
 - [ ] Replace mock aggregates with real queries: commissions (`therapists.commission_percent` × `sale_items`), Z-report, occupancy.
 
-## Phase 5 — ZATCA Phase 2 e-invoicing *(only if VAT-registered — see Phase 0.D)*
+## Phase 5 — ZATCA Phase 2 e-invoicing *(in scope — VAT-registered; needs the registration number)*
 - [ ] Implement the cryptographic stamp / CSID onboarding (fields exist on `sales`; `apps/desktop/src/main/services/zatca.worker.ts` is a stub).
 
 ## Phase 6 — Hardware
@@ -74,8 +75,8 @@ missing.** These are the prerequisites, grouped.
 
 ## Open decisions (confirm with client)
 
-Resolved in the live schema: single branch, services-only (no retail), HALA payments.
-Still open:
-1. **VAT-registered or not?** (Phase 0.D — gates seeding and the whole ZATCA layer.)
+Resolved: single branch, services-only (no retail), HALA payments, **VAT-registered at
+15%** (ZATCA in scope). Still open:
+1. The **ZATCA VAT registration number** (15 digits) — pending; fill `company.vat_number` once available.
 2. Supabase plan/region and who owns the project; the direct `DATABASE_URL`.
 3. HALA onboarding (merchant/terminal IDs) — needed before Phase 6.

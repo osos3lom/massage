@@ -7,7 +7,8 @@ Evidence-based snapshot of what is actually built, audited against the code on
 > **One-line summary:** the UI is far ahead of the backend. The marketing site and
 > the full back-office (dashboard + POS) are **built but run entirely on client-side
 > mock data**. Supabase, PowerSync, `@oasis/db`, and real auth are **scaffolds not
-> yet wired**. No database connection or migration exists yet.
+> yet wired**. The DB migration + seed are now scripted (`packages/db`) but not yet
+> run against a live Supabase project.
 
 > **Recent change:** the dashboard + POS were relocated out of `apps/web` into the
 > Electron app (`apps/desktop/src/renderer/`) and committed in `9dcef79`
@@ -64,9 +65,11 @@ Tooling: **pnpm workspaces + turbo**.
 ## 4. Scaffolded but NOT wired
 
 - **`packages/db`** — Drizzle schema (21 tables, single-branch halalas, blueprint §4)
-  + `rls-policies.sql`. **No migration tooling at all** (see `plan.md` Phase 0): no
-  `drizzle.config.ts`, no migrations, no Postgres driver, no DB client, no scripts.
-  `@oasis/db` is imported by nothing.
+  + `rls-policies.sql`. **Tooling now in place** (`plan.md` Phase 0.A): `postgres`
+  driver, `drizzle.config.ts`, Node DB client (`src/client.ts`), `db:generate/migrate/
+  push/studio/seed/rls` scripts, a generated first migration
+  (`migrations/0000_polite_white_queen.sql`), and a seed script (`seed.ts`). **Not yet
+  run** — needs a live `DATABASE_URL`. `@oasis/db` is still imported by no app.
 - **`packages/shared`** — money/types; effectively unused (`seedData.ts` even
   redefines its own `toHalalas`).
 - **Supabase** — deps installed; `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` +
@@ -83,18 +86,20 @@ Tooling: **pnpm workspaces + turbo**.
 | `payment_methods` | `payment_kind`/`card_scheme` enums + HALA fields | deliberately replaced |
 | `rls-policies.sql` | ported → `packages/db/rls-policies.sql` | fixed |
 
-`plan/schema/` was deleted; `packages/db` is the single source of truth. **But the
-seed data has not caught up:** `seedData.ts` still exports `SEED_COMMISSION_RULES`,
-`SEED_PAYMENT_METHODS`, `SEED_PRODUCTS` and uses `priceSar` (not halalas) — it still
-models the old schema (see `plan.md` Phase 0, items C).
+`plan/schema/` was deleted; `packages/db` is the single source of truth. The **DB seed
+(`packages/db/seed.ts`) is reconciled** to it (halalas, no removed tables). The **UI
+mock `seedData.ts`** (in `apps/web` and `apps/desktop/src/renderer`) has **not** caught
+up — it still exports `SEED_COMMISSION_RULES`, `SEED_PAYMENT_METHODS`, `SEED_PRODUCTS`
+and uses `priceSar` (not halalas); harmless until the UI moves off mock data.
 
-## 6. Unresolved contradiction — VAT ⚠️
+## 6. VAT — decided (VAT-registered, 15%)
 
-`seedData.ts` says the center is **not VAT-registered**: `vatNumber: ''`,
-`vatRatePercent: 0`, services `taxRate: 0 / taxable: false`. But `packages/db`
-defaults `tax_rate = 15 / taxable = true`, and `blueprint.md` assumes ZATCA Phase 2 /
-VAT 15%. This must be decided before seeding, and it determines whether the whole
-ZATCA layer is even in scope.
+Resolved: the center is **VAT-registered at 15%**; the ZATCA registration number is
+**not yet available**. The schema default (`tax_rate = 15 / taxable = true`) already
+matched, and `packages/db/seed.ts` seeds services at 15% VAT-inclusive with
+`company.vat_number` null (fill when the number arrives). ZATCA Phase 2 stays in scope
+(`plan.md` Phase 5). The UI mock `seedData.ts` still carries stale "0% / not
+registered" comments (see §5).
 
 ## 7. Deployment
 
