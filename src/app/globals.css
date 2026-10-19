@@ -9,7 +9,16 @@
   --color-aura-text: #2F2F2F;
   --color-aura-muted: #7A7072;
   --color-aura-border: #F0E4E6;
-  
+  --color-aura-surface: #FFFFFF;
+
+  /* Back-office status colors (always paired with an icon or label, never color alone) */
+  --color-aura-success: #4F7F63;
+  --color-aura-success-bg: #EAF2EC;
+  --color-aura-warning: #9A6416;
+  --color-aura-warning-bg: #FBF1E1;
+  --color-aura-danger: #B4424F;
+  --color-aura-danger-bg: #FBEBED;
+
   --font-serif: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), sans-serif;
   
@@ -94,4 +103,32 @@ body {
 input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.6;
   cursor: pointer;
+}
+
+/* Back office: diagonal hatch for unassigned / open slots */
+.aura-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(168, 107, 115, 0.10) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+/* POS: print only the receipt / Z-report, sized for an 80mm thermal printer */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .pos-receipt,
+  .pos-receipt * {
+    visibility: visible;
+  }
+  .pos-receipt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80mm;
+    max-width: none;
+    border: 0;
+  }
 }
