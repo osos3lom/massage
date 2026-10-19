@@ -12,10 +12,17 @@ if (!url) throw new Error('DATABASE_URL is not set. See packages/db/.env.example
 const sqlPath = fileURLToPath(new URL('./rls-policies.sql', import.meta.url));
 const ddl = readFileSync(sqlPath, 'utf8');
 
-const sql = postgres(url);
-try {
-  await sql.unsafe(ddl);
-  console.log('RLS policies applied.');
-} finally {
-  await sql.end();
+async function main() {
+  const sql = postgres(url!);
+  try {
+    await sql.unsafe(ddl);
+    console.log('RLS policies applied.');
+  } finally {
+    await sql.end();
+  }
 }
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

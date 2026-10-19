@@ -39,10 +39,27 @@ async function main() {
     address: 'Al Nuzha District, Jeddah',
   });
 
-  await db.insert(s.roles).values([
-    { name: 'admin', permissions: [] },
-    { name: 'cashier', permissions: [] },
-  ]);
+  const [adminRole] = await db
+    .insert(s.roles)
+    .values([
+      { name: 'admin', permissions: [] },
+      { name: 'cashier', permissions: [] },
+    ])
+    .returning({ id: s.roles.id, name: s.roles.name })
+    .then((rows) => rows.filter((r) => r.name === 'admin'));
+
+  // Link the first admin to the Supabase Auth user created in the Dashboard
+  // (Authentication -> Users). RLS resolves identity via users.auth_user_id.
+  const adminAuthId = process.env.ADMIN_AUTH_USER_ID;
+  if (!adminAuthId) throw new Error('ADMIN_AUTH_USER_ID is not set (UUID of the Supabase Auth admin user).');
+  await db.insert(s.users).values({
+    authUserId: adminAuthId,
+    branchId,
+    roleId: adminRole.id,
+    fullNameEn: process.env.ADMIN_NAME_EN ?? 'Admin',
+    fullNameAr: process.env.ADMIN_NAME_AR ?? 'المدير',
+    isActive: true,
+  });
 
   const cat = { massage: randomUUID(), bath: randomUUID(), pedicure: randomUUID() };
   await db.insert(s.serviceCategories).values([
@@ -76,7 +93,7 @@ async function main() {
     { branchId, nameEn: 'Therapist B', nameAr: 'المعالج ب', skills: ['pedicure', 'massage'], commissionPercent: 10 },
   ]);
 
-  console.log('Seed complete: company, branch, 2 roles, 3 categories, 4 services, 4 packages, 2 rooms, 2 therapists.');
+  console.log('Seed complete: company, branch, 2 roles, admin user, 3 categories, 4 services, 4 packages, 2 rooms, 2 therapists.');
 }
 
 main()

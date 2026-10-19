@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Send, ArrowUp } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { SITE_IMAGES } from '@/data/siteImages';
 import { asset } from '@/i18n/config';
@@ -62,7 +63,7 @@ const instagramPhotos = SITE_IMAGES.instagram;
 const footerLinks = ['about', 'services', 'packages', 'gallery', 'faq'] as const;
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -149,6 +150,18 @@ export default function Footer() {
                 </a>
               </li>
             ))}
+            <li className="pt-2 border-t border-white/10">
+              <Link href="/pos" className="text-aura-accent hover:underline flex items-center gap-1.5 font-medium">
+                <span>💳</span>
+                <span>{lang === 'ar' ? 'نقطة البيع (POS)' : 'POS Terminal Demo'}</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/dashboard" className="text-white/80 hover:text-white flex items-center gap-1.5">
+                <span>📊</span>
+                <span>{lang === 'ar' ? 'لوحة التحكم الإدارية' : 'Management Dashboard'}</span>
+              </Link>
+            </li>
           </ul>
         </div>
 

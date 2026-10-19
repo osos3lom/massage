@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { asset } from '@/i18n/config';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -18,7 +19,7 @@ const navItems = [
 ] as const;
 
 export default function Navbar() {
-  const { t, data } = useLanguage();
+  const { lang, t, data } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -116,12 +117,24 @@ export default function Navbar() {
           </nav>
 
           {/* Call To Action Button */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5">
             <LanguageSwitcher />
+            <Link
+              href="/pos"
+              className="inline-flex items-center justify-center whitespace-nowrap px-3.5 py-2 text-xs font-semibold tracking-wider border border-aura-accent/35 bg-aura-primary/30 text-aura-accent hover:bg-aura-primary hover:border-aura-accent shadow-sm transition-all duration-300 rounded-full"
+            >
+              💳 {lang === 'ar' ? 'نقطة البيع POS' : 'POS Demo'}
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center whitespace-nowrap px-3.5 py-2 text-xs font-semibold tracking-wider border border-aura-border bg-aura-surface text-aura-text hover:border-aura-accent hover:text-aura-accent shadow-sm transition-all duration-300 rounded-full"
+            >
+              📊 {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+            </Link>
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, '#contact')}
-              className="inline-flex items-center justify-center whitespace-nowrap px-6 py-2.5 text-xs font-semibold tracking-widest uppercase border border-aura-accent text-aura-text hover:bg-aura-gradient hover:border-transparent hover:text-white hover:-translate-y-0.5 shadow-sm transition-all duration-300 rounded-full"
+              className="inline-flex items-center justify-center whitespace-nowrap px-5 py-2 text-xs font-semibold tracking-widest uppercase border border-aura-accent text-aura-text hover:bg-aura-gradient hover:border-transparent hover:text-white hover:-translate-y-0.5 shadow-sm transition-all duration-300 rounded-full"
             >
               {t.nav.bookNow}
             </a>
@@ -169,11 +182,27 @@ export default function Navbar() {
               ))}
             </div>
 
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-4">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-aura-border/40">
+                <Link
+                  href="/pos"
+                  onClick={() => setIsOpen(false)}
+                  className="text-center py-2.5 px-2 rounded-full border border-aura-accent/40 bg-aura-primary/30 text-aura-accent text-xs font-semibold tracking-wider"
+                >
+                  💳 {lang === 'ar' ? 'نقطة البيع POS' : 'POS Demo'}
+                </Link>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="text-center py-2.5 px-2 rounded-full border border-aura-border bg-aura-surface text-aura-text text-xs font-semibold tracking-wider"
+                >
+                  📊 {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
+                </Link>
+              </div>
               <a
                 href="#contact"
                 onClick={(e) => handleNavClick(e, '#contact')}
-                className="w-full text-center py-4 bg-aura-accent bg-aura-gradient text-white font-semibold tracking-widest uppercase rounded-full shadow-sm hover:bg-aura-gradient-hover"
+                className="w-full text-center py-3.5 bg-aura-accent bg-aura-gradient text-white font-semibold tracking-widest uppercase rounded-full shadow-sm hover:bg-aura-gradient-hover"
               >
                 {t.nav.bookAppointment}
               </a>
