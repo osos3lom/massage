@@ -31,19 +31,147 @@ const elMessiri = El_Messiri({
 });
 
 const { brand, meta } = dictionaries[DEFAULT_LANG];
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://relaxation-oasis.sa";
 
 export const metadata: Metadata = {
-  title: meta.title,
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: meta.title,
+    template: `%s | ${brand.name}`,
+  },
   description: meta.description,
-  keywords: ["massage", "Moroccan bath", "pedicure", "Jeddah", "Al Nuzha", "Relaxation Oasis", "مساج", "حمام مغربي", "بديكير", "جدة", "حي النزهة", "واحة الإسترخاء"],
+  keywords: [
+    "مساج جدة",
+    "حمام مغربي جدة",
+    "بديكير رجالي جدة",
+    "واحة الإسترخاء",
+    "مساج شارع حراء",
+    "مساج حي النزهة",
+    "massage Jeddah",
+    "Moroccan bath Jeddah",
+    "pedicure Jeddah",
+    "Relaxation Oasis",
+  ],
   authors: [{ name: brand.name }],
+  creator: brand.name,
+  publisher: brand.name,
+  formatDetection: {
+    email: false,
+    address: true,
+    telephone: true,
+  },
+  alternates: {
+    canonical: siteUrl,
+    languages: {
+      "ar-SA": `${siteUrl}/?lang=ar`,
+      "en-US": `${siteUrl}/?lang=en`,
+    },
+  },
   openGraph: {
     title: meta.ogTitle,
     description: meta.ogDescription,
+    url: siteUrl,
     siteName: brand.name,
-    locale: meta.locale,
-    alternateLocale: meta.locale === "ar_SA" ? ["en_US"] : ["ar_SA"],
+    locale: "ar_SA",
+    alternateLocale: ["en_US"],
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 600,
+        alt: brand.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: meta.ogTitle,
+    description: meta.ogDescription,
+    images: ["/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": ["DaySpa", "HealthAndBeautyBusiness"],
+  name: "واحة الإسترخاء للمساج والحمام المغربي",
+  alternateName: "Relaxation Oasis Massage & Moroccan Bath",
+  url: siteUrl,
+  logo: `${siteUrl}/logo.png`,
+  image: `${siteUrl}/logo.png`,
+  description: "مركز واحة الإسترخاء المتخصص في جلسات المساج العلاجي والاسترخائي والحمام المغربي الملكي والعناية بالقدمين واليدين في جدة.",
+  telephone: "+966555555555",
+  priceRange: "SAR 150 - SAR 600",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "شارع حراء، حي النزهة",
+    addressLocality: "جدة",
+    addressRegion: "منطقة مكة المكرمة",
+    postalCode: "23532",
+    addressCountry: "SA",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 21.6166,
+    longitude: 39.1637,
+  },
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
+      opens: "10:00",
+      closes: "02:00",
+    },
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "قائمة خدمات واحة الإسترخاء",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "مساج استرخائي سويدي",
+          description: "جلسة مساج استرخائي لتخفيف التوتر وإعادة الحيوية للجسم",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "حمام مغربي ملكي",
+          description: "حمام مغربي أصيل بالصابون البلدي والأعشاب الطبيعية والبخار",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "بديكير وعناية بالقدمين",
+          description: "تقشير ناعم ونقع استرخائي وعناية متكاملة للقدمين",
+        },
+      },
+    ],
   },
 };
 
@@ -58,6 +186,12 @@ export default function RootLayout({
       dir={getDir(DEFAULT_LANG)}
       className={`${inter.variable} ${playfair.variable} ${tajawal.variable} ${elMessiri.variable} h-full scroll-smooth antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full bg-aura-bg text-aura-text font-sans">
         <LanguageProvider>{children}</LanguageProvider>
       </body>

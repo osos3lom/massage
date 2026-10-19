@@ -8,7 +8,12 @@
   ],
   "scripts": {
     "dev": "pnpm --filter @oasis/web dev",
-    "build": "pnpm --filter @oasis/web build",
+    "dev:web": "pnpm --filter @oasis/web dev",
+    "dev:desktop": "pnpm --filter @oasis/desktop dev",
+    "build": "pnpm --filter @oasis/web build && pnpm --filter @oasis/desktop build",
+    "build:web": "pnpm --filter @oasis/web build",
+    "build:desktop": "pnpm --filter @oasis/desktop build",
+    "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint"
   },
   "devDependencies": {

@@ -20,7 +20,7 @@
 
 import { useSyncExternalStore } from 'react';
 import type { Lang } from '@/i18n/config';
-import type { Role } from '@/components/dashboard/nav';
+export type Role = 'admin' | 'cashier';
 import { SITE_IMAGES } from '@/data/siteImages';
 
 /* ============================================================================
@@ -29,7 +29,7 @@ import { SITE_IMAGES } from '@/data/siteImages';
 
 /**
  * 1. COMPANY & PRIMARY BRANCH — [REQUIRED]
- * Maps to `company` and `branches` tables in `plan/schema/schema.ts`,
+ * Maps to `company` and `branches` tables in `packages/db/src/schema.ts`,
  * and also powers the public landing page contact/footer section.
  */
 export const SEED_COMPANY_AND_BRANCH = {
@@ -122,7 +122,7 @@ export const SEED_WORKING_HOURS: {
 
 /**
  * 3. STAFF ACCOUNTS (ADMIN & CASHIERS) — [REQUIRED: At least 1 Admin]
- * Maps to `roles` ('admin' | 'cashier') and `users` tables in `plan/schema/schema.ts`.
+ * Maps to `roles` ('admin' | 'cashier') and `users` tables in `packages/db/src/schema.ts`.
  * `pinCode` is hashed into `users.pin_hash` when pushed to Supabase.
  */
 export const SEED_STAFF: StaffMemberConfig[] = [
@@ -150,7 +150,7 @@ export const SEED_STAFF: StaffMemberConfig[] = [
 
 /**
  * 4. OFFICIAL SERVICES CATALOG — [REQUIRED]
- * Maps to `services` table in `plan/schema/schema.ts` AND renders on the public landing page.
+ * Maps to `services` table in `packages/db/src/schema.ts` AND renders on the public landing page.
  */
 export const SEED_SERVICES: CatalogService[] = [
   {
@@ -222,7 +222,7 @@ export const SEED_SERVICES: CatalogService[] = [
 
 /**
  * 5. OFFICIAL PACKAGES CATALOG — [REQUIRED]
- * Maps to `packages` table in `plan/schema/schema.ts` AND renders on the public landing page.
+ * Maps to `packages` table in `packages/db/src/schema.ts` AND renders on the public landing page.
  */
 export const SEED_PACKAGES: PackageCatalogItem[] = [
   {
@@ -286,7 +286,7 @@ export const SEED_PACKAGES: PackageCatalogItem[] = [
 
 /**
  * 6. TREATMENT ROOMS & HAMMAM SUITES — [OPTIONAL now, or fill to seed rooms]
- * Maps to `rooms` table in `plan/schema/schema.ts`.
+ * Maps to `rooms` table in `packages/db/src/schema.ts`.
  * `forKind` must be: 'massage' | 'moroccan-bath' | 'pedicure'
  */
 export const SEED_ROOMS: RoomConfig[] = [
@@ -336,7 +336,7 @@ export const SEED_ROOMS: RoomConfig[] = [
 
 /**
  * 7. COMMISSION RULES & THERAPISTS — [OPTIONAL now, or fill to seed staff]
- * Maps to `commission_rules` and `therapists` tables in `plan/schema/schema.ts`.
+ * Maps to the `therapists` table in `packages/db` (commission is `therapists.commission_percent`).
  */
 export const SEED_COMMISSION_RULES: CommissionRuleItem[] = [
   {
@@ -407,7 +407,7 @@ export const SEED_THERAPISTS: TherapistProfile[] = [
 
 /**
  * 8. PAYMENT METHODS — [REQUIRED]
- * Maps to `payment_methods` table in `plan/schema/schema.ts`.
+ * Maps to the `payment_kind`/`card_scheme` enums on `payments` in `packages/db`.
  */
 export const SEED_PAYMENT_METHODS: PaymentMethodConfig[] = [
   {
@@ -510,8 +510,8 @@ export const SEED_INTEGRATIONS = {
     },
     receiptHeaderAr: 'أهلاً بكم في واحة الإسترخاء للمساج — راحتكم غايتنا',
     receiptHeaderEn: 'Welcome to Relaxation Oasis Massage — Your Comfort Comes First',
-    receiptFooterAr: 'شكراً لزيارتكم · الفاتورة شاملة ضريبة القيمة المضافة ١٥٪',
-    receiptFooterEn: 'Thank you for visiting · Prices include 15% KSA VAT',
+    receiptFooterAr: 'شكراً لزيارتكم واحة الإسترخاء — نتشرف بخدمتكم دائماً',
+    receiptFooterEn: 'Thank you for visiting Relaxation Oasis — Looking forward to serving you again',
   },
 };
 
@@ -2058,7 +2058,7 @@ export function encodeZatcaTlvPreview(params: {
   return { base64, tags };
 }
 
-const SETTINGS_STORAGE_KEY = 'aura-settings-v4';
+const SETTINGS_STORAGE_KEY = 'aura-settings-v5';
 
 const readSettingsStorage = (): SettingsState => {
   try {
