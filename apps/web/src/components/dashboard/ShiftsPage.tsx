@@ -13,9 +13,9 @@ import {
   X,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import { CASHIERS, fmtMoney, toHalalas } from '@/data/posData';
-import { computeShiftSummary, usePhase1Store } from '@/data/phase1Store';
-import { useSettingsStore } from '@/data/settingsStore';
+import {
+  CASHIERS, computeShiftSummary, fmtMoney, toHalalas, usePhase1Store, useSettingsStore,
+} from '@/data/seedData';
 import { fmtDate } from './format';
 import { useDashboard } from './useDashboard';
 

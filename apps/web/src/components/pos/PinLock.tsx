@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { Delete } from 'lucide-react';
 import { asset } from '@/i18n/config';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { CASHIERS, type Cashier } from '@/data/posData';
-import { useSettingsStore } from '@/data/settingsStore';
+import { CASHIERS, useSettingsStore, type Cashier } from '@/data/seedData';
 import { usePos } from './usePos';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'clear', '0', 'back'] as const;

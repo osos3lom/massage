@@ -4,12 +4,10 @@ import { useMemo, useRef, useState } from 'react';
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, ListChecks, LogIn, Plus, Search } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
 import {
-  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, addDays, bookableInfo, displayStatus,
-  minutesToHHMM, startOfDay, toDateKey, type Booking, type BookableId,
-} from '@/data/dashboardData';
-import { addBooking, mergeBookings, useBookingsStore } from '@/data/bookingsStore';
-import { usePhase34Store } from '@/data/phase34Store';
-import { toHalalas } from '@/data/posData';
+  BOOKABLE_IDS, BOOKABLES, DAY_END, DAY_START, addBooking, addDays, bookableInfo, displayStatus,
+  mergeBookings, minutesToHHMM, startOfDay, toDateKey, toHalalas, useBookingsStore, usePhase34Store,
+  type Booking, type BookableId,
+} from '@/data/seedData';
 import { dashboardDictionaries } from '@/i18n/dashboardDictionary';
 import { fmtDate, fmtMinutes, fmtRange } from '@/components/dashboard/format';
 import { STATUS_STYLE } from '@/components/dashboard/status';

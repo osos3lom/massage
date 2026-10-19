@@ -14,12 +14,12 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react';
-import type { ServiceKind } from '@/data/dashboardData';
 import {
   usePhase34Store,
   type RoomConfig,
   type RoomLiveState,
-} from '@/data/phase34Store';
+  type ServiceKind,
+} from '@/data/seedData';
 import { useDashboard } from './useDashboard';
 
 const KIND_META: Record<ServiceKind, { icon: LucideIcon; ar: string; en: string }> = {

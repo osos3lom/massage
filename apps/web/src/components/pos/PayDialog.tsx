@@ -2,12 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { Banknote, CreditCard, Landmark, PackageCheck, Printer, Smartphone, Trash2, type LucideIcon } from 'lucide-react';
-import { BOOKABLE_IDS, bookableInfo, type BookableId } from '@/data/dashboardData';
 import {
-  CASHIERS, PAYMENT_KINDS, fmtMoney, toHalalas, type CompletedSale, type Payment, type PaymentKind,
-} from '@/data/posData';
-import { usePhase34Store } from '@/data/phase34Store';
-import { encodeZatcaTlvPreview, useSettingsStore } from '@/data/settingsStore';
+  BOOKABLE_IDS, CASHIERS, PAYMENT_KINDS, bookableInfo, encodeZatcaTlvPreview, fmtMoney, toHalalas,
+  usePhase34Store, useSettingsStore,
+  type BookableId, type CompletedSale, type Payment, type PaymentKind,
+} from '@/data/seedData';
 import { fmtDate } from '@/components/dashboard/format';
 import Modal from './Modal';
 import { usePos } from './usePos';

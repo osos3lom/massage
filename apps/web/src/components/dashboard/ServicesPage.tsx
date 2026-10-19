@@ -19,7 +19,7 @@ import {
   usePhase1Store,
   type CatalogCategory,
   type CatalogService,
-} from '@/data/phase1Store';
+} from '@/data/seedData';
 import { fmtNumber } from './format';
 import { useDashboard } from './useDashboard';
 

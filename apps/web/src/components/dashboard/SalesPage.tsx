@@ -15,10 +15,10 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import { THERAPISTS } from '@/data/dashboardData';
-import { CASHIERS, fmtMoney, type PaymentKind } from '@/data/posData';
-import { usePhase1Store } from '@/data/phase1Store';
-import { encodeZatcaTlvPreview, useSettingsStore } from '@/data/settingsStore';
+import {
+  CASHIERS, THERAPISTS, encodeZatcaTlvPreview, fmtMoney, usePhase1Store, useSettingsStore,
+  type PaymentKind,
+} from '@/data/seedData';
 import { fmtDate } from './format';
 import { useDashboard } from './useDashboard';
 

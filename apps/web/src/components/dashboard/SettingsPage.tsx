@@ -11,7 +11,7 @@ import {
   useSettingsStore,
   type DayKey,
   type StaffMemberConfig,
-} from '@/data/settingsStore';
+} from '@/data/seedData';
 import type { Role } from './nav';
 import { useDashboard } from './useDashboard';
 

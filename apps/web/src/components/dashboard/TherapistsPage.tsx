@@ -13,8 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { currencyLabel } from '@/i18n/config';
-import type { ServiceKind } from '@/data/dashboardData';
-import { usePhase34Store, type TherapistProfile } from '@/data/phase34Store';
+import { usePhase34Store, type ServiceKind, type TherapistProfile } from '@/data/seedData';
 import { fmtNumber } from './format';
 import { useDashboard } from './useDashboard';
 
