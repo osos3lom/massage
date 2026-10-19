@@ -9,10 +9,10 @@ Evidence-based snapshot of what is actually built, audited against the code on
 > mock data**. Supabase, PowerSync, `@oasis/db`, and real auth are **scaffolds not
 > yet wired**. No database connection or migration exists yet.
 
-> ⚠️ **In-progress, uncommitted move:** the dashboard + POS have been relocated out
-> of `apps/web` into the Electron app (`apps/desktop/src/renderer/`). This lives in
-> the working tree but is **not committed** — the last commit (`1a65417`) still has
-> them in `apps/web`. This doc describes the working-tree reality.
+> **Recent change:** the dashboard + POS were relocated out of `apps/web` into the
+> Electron app (`apps/desktop/src/renderer/`) and committed in `9dcef79`
+> ("complete decoupling of web SEO marketing site and desktop POS application").
+> `apps/web` is now the marketing site only.
 
 ---
 

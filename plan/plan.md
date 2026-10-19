@@ -5,12 +5,11 @@ marketing site and the back-office (dashboard + POS) are built on **mock data**;
 database is schema-only with **no tooling, connection, or seed**. Design in
 [`blueprint.md`](./blueprint.md).
 
-> **Architecture note (working-tree reality):** the back-office now lives in the
-> Electron app (`apps/desktop/src/renderer/`), not `apps/web`. That's the right home —
-> Electron has a Node runtime, so it can talk to local SQLite + PowerSync + Drizzle
-> directly (a static-exported web app can't). `apps/web` is marketing-only and will
-> only need Supabase JS later for online booking (Phase 7). **This move is uncommitted —
-> commit it before building on top.**
+> **Architecture note:** the back-office now lives in the Electron app
+> (`apps/desktop/src/renderer/`), not `apps/web` — committed in `9dcef79`. That's the
+> right home: Electron has a Node runtime, so it can talk to local SQLite + PowerSync +
+> Drizzle directly (a static-exported web app can't). `apps/web` is marketing-only and
+> will only need Supabase JS later for online booking (Phase 7).
 
 ---
 
